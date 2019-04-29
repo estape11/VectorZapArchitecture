@@ -1,2 +1,2 @@
 # VectorZapArchitecure
-Simple Vector Processor
+Vector⚡ (Vector Zap) is a simple vector processor.
