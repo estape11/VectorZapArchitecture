@@ -25,8 +25,8 @@ int Register::Width(void){
 
 }
 
-void Register::Clk(char *signal){
-	apClk = signal;
+void Register::Clk(char *pSignal){
+	apClk = pSignal;
 
 }
 
@@ -62,8 +62,8 @@ char *Register::Data(void){
 
 }
 
-void Register::Input(char *input){
-	apInput = input;
+void Register::Input(char *pInput){
+	apInput = pInput;
 
 }
 

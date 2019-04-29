@@ -1,5 +1,6 @@
 #include <Clock.hpp>
 #include <Register.hpp>
+#include <BaseHelper.hpp>
 
 #include <pthread.h>
 #include <string.h>
@@ -44,13 +45,27 @@ int main(int argc, const char* argv[]){
 
 	char* datoIn = (char *) malloc(sizeof(char)*10);
 	char* datoIn2 = (char *) malloc(sizeof(char)*10);
+
+	char ** twoD = (char**) malloc(sizeof(char*)*10);
+
+	for(int i=0;i<10;i++){
+		twoD[i] = (char *) malloc(sizeof(char)*32);
+		memset(twoD[i],0,32);
+		printf(">> ");
+		PrintData(twoD[i] , 32);
+	}	
+
 	strncpy(datoIn2, datoIn, 10);
 	memset(datoIn,0,10);
 	datoIn[0] = 0x1;
 	datoIn[1] = 0x0;
 	datoIn[2] = 0x1;
+	BaseHelper baseHelper = BaseHelper();
+	datoIn = baseHelper.DecimalToBin(19, 3);
+
 	printf(">> ");
 	PrintData(datoIn, 10);
+	printf(">> %d\n", baseHelper.BinToDecimal(datoIn, 10) );
 
 	// Initialize objects
 	reg = Register();
@@ -65,6 +80,7 @@ int main(int argc, const char* argv[]){
 	char* signalClk = clk.Signal();
 
 	reg.Clk(signalClk);
+	//while (true);
 
 	pthread_t a;
 	pthread_t b;
@@ -79,7 +95,7 @@ int main(int argc, const char* argv[]){
 			printf(">> i = %d\n", i);
 		}
 		if(i==40000){
-			reg.Disable();
+			//reg.Disable();
 			datoIn[3] = 1;
 		}
 		if(i>=1000000){

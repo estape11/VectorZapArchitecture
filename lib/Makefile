@@ -15,19 +15,22 @@
 # Classes names
 CLK=Clock
 REG=Register
-
+BASE=BaseHelper
 CC=g++
 INCLUDE=../include
 AR=ar
 OPTNS=-Wall -std=c++11
 
-all:$(CLK).o $(REG).o
+all:$(CLK).o $(REG).o $(BASE).o
 
 $(CLK).o:$(CLK).cpp
 		$(CC) $(OPTNS) -c $(CLK).cpp -o $(CLK).o -I$(INCLUDE)
 
 $(REG).o:$(REG).cpp
 		$(CC) $(OPTNS) -c $(REG).cpp -o $(REG).o -I$(INCLUDE)
+
+$(BASE).o:$(BASE).cpp
+		$(CC) $(OPTNS) -c $(BASE).cpp -o $(BASE).o -I$(INCLUDE)
 
 clean:
 		rm -f *.o 

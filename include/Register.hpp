@@ -47,7 +47,7 @@ public:
 	// @author estape11
 	// @params signal
 	// @return void
-	void Clk(char*);
+	void Clk(char *);
 
 	// Enable the register
 	// @author estape11
