@@ -48,7 +48,7 @@ void Clock::Run(void){
 	sleepValue.tv_nsec = nanoSecs;
 	sleepValue.tv_sec = 0;
 
-	*apSignal = 1;
+	*apSignal = 0;
 	
 	while (aRun) {
 		nanosleep(&sleepValue, NULL);
@@ -67,7 +67,7 @@ void Clock::Run(void){
 
 void Clock::RunKeyboard(void){
 	printf("> Clock started \u26A1\n");
-	*apSignal = 1;
+	*apSignal = 0;
 	char c = '\0';
 	aRun = true;
 	while (std::cin.get(c))	{

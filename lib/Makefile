@@ -16,12 +16,13 @@
 CLK=Clock
 REG=Register
 BASE=BaseHelper
+SREGFILE=ScalarRegisterFile
 CC=g++
 INCLUDE=../include
 AR=ar
 OPTNS=-Wall -std=c++11
 
-all:$(CLK).o $(REG).o $(BASE).o
+all:$(CLK).o $(REG).o $(BASE).o $(SREGFILE).o
 
 $(CLK).o:$(CLK).cpp
 		$(CC) $(OPTNS) -c $(CLK).cpp -o $(CLK).o -I$(INCLUDE)
@@ -31,6 +32,9 @@ $(REG).o:$(REG).cpp
 
 $(BASE).o:$(BASE).cpp
 		$(CC) $(OPTNS) -c $(BASE).cpp -o $(BASE).o -I$(INCLUDE)
+
+$(SREGFILE).o:$(SREGFILE).cpp
+		$(CC) $(OPTNS) -c $(SREGFILE).cpp -o $(SREGFILE).o -I$(INCLUDE)
 
 clean:
 		rm -f *.o 

@@ -1,6 +1,7 @@
 #include <Clock.hpp>
 #include <Register.hpp>
-#include <BaseHelper.hpp>
+#include <ScalarRegisterFile.hpp>
+#include <Types.hpp>
 
 #include <pthread.h>
 #include <string.h>
@@ -19,6 +20,13 @@ void PrintData(char * data, int lenght){
 
 Clock clk;
 Register reg;
+ScalarRegisterFile RegisterBank;
+
+void* startRegisterBank(void* args){
+	RegisterBank.Run();
+	pthread_exit(NULL);
+
+}
 
 void* startRegister(void* args){
 	reg.Enable();
@@ -34,7 +42,7 @@ void* startALU(void* args){
 }
 
 void* startClock(void* args){
-	clk.Frequency(100);
+	clk.Frequency(1);
 	//clk.Signal((char*)args);
 	clk.Run();
 	pthread_exit(NULL);
@@ -43,65 +51,87 @@ void* startClock(void* args){
 int main(int argc, const char* argv[]){
 	printf("Take 2\n");
 
-	char* datoIn = (char *) malloc(sizeof(char)*10);
-	char* datoIn2 = (char *) malloc(sizeof(char)*10);
-
-	char ** twoD = (char**) malloc(sizeof(char*)*10);
-
-	for(int i=0;i<10;i++){
-		twoD[i] = (char *) malloc(sizeof(char)*32);
-		memset(twoD[i],0,32);
-		printf(">> ");
-		PrintData(twoD[i] , 32);
-	}	
-
-	strncpy(datoIn2, datoIn, 10);
+	bit *datoIn = (bit *) malloc(sizeof(bit)*10);
 	memset(datoIn,0,10);
-	datoIn[0] = 0x1;
-	datoIn[1] = 0x0;
-	datoIn[2] = 0x1;
-	BaseHelper baseHelper = BaseHelper();
-	datoIn = baseHelper.DecimalToBin(19, 3);
+	datoIn[0] = 1;
+	datoIn[1] = 0;
+	datoIn[2] = 1;
 
-	printf(">> ");
-	PrintData(datoIn, 10);
-	printf(">> %d\n", baseHelper.BinToDecimal(datoIn, 10) );
+	bit *enW = (bit *) malloc(sizeof(bit));
+	bit *enR = (bit *) malloc(sizeof(bit));
+
+	// Registers address
+	bit *rA = (bit *) malloc(sizeof(bit)*4);
+	bit *rB = (bit *) malloc(sizeof(bit)*4);
+	bit *rC = (bit *) malloc(sizeof(bit)*4);
+	memset(rA,0,4);
+	memset(rB,0,4);
+	memset(rC,0,4);
+	rC[0] = 1;
+	rA[0] = 1;
+
+	// Out
+	bit *oA;
+	bit *oB;
 
 	// Initialize objects
+	clk = Clock();
+	clk.Initialize();
+	bit *signalClk = clk.Signal();
+
 	reg = Register();
 	reg.Width(10);
 	reg.Initialize();
-	char* datoOut = reg.Data();
+	bit *datoOut = reg.Data();
 	reg.Input(datoIn);
-
-	clk = Clock();
-	clk.Initialize();
-
-	char* signalClk = clk.Signal();
-
 	reg.Clk(signalClk);
+
+	RegisterBank.Width(10);
+	RegisterBank.Length(16);
+	RegisterBank.Initialize();
+	RegisterBank.SetControlSignals(enR, enW);
+	RegisterBank.Clk(signalClk);
+	oA = RegisterBank.OutA();
+	oB = RegisterBank.OutB();
+	RegisterBank.RegA(rA);
+	RegisterBank.RegB(rB);
+	RegisterBank.RegC(rC);
+	RegisterBank.DataIn(datoIn);	
+	*enR = 1;
+	*enW = 0;
+
+	printf("> Objects created succesfully\n");
+
 	//while (true);
 
 	pthread_t a;
 	pthread_t b;
-	pthread_create(&a, NULL, startALU, NULL);
+	pthread_t c;
+	pthread_create(&a, NULL, startClock, NULL);
 	pthread_create(&b, NULL, startRegister, NULL);
+	pthread_create(&c, NULL, startRegisterBank, NULL);
 
 	int i = 0;
 	while(true){
 		if(*signalClk == 1){
-			PrintData(datoOut, 10);
+			printf("jj\n");
+			//PrintData(datoOut, 10);
+			printf(">> Reg A out = ");
+			PrintData(oA, 10);
 			i++;
-			printf(">> i = %d\n", i);
+			//printf(">> i = %d\n", i);
 		}
-		if(i==40000){
+		if(i==3){
 			//reg.Disable();
+			*enW = 1;
 			datoIn[3] = 1;
+
 		}
-		if(i>=1000000){
+		if(i>=15){
 			clk.Stop();
 			break;
 		}
+		sleep(1);
 	}
 	pthread_join(a, NULL);
 	return 0;

@@ -36,3 +36,12 @@ char *BaseHelper::DecimalToBin(int decimal, int length){
 	return pBinary;
 
 }
+
+void BaseHelper::PrintBin(char *data, int lenght){
+	for (int i = lenght-1; i >= 0  ; i--){
+		printf("%d", data[i]);
+
+	}
+	printf("\n");
+	
+}
