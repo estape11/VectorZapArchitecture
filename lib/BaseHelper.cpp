@@ -15,7 +15,7 @@
 
 #include <BaseHelper.hpp>
 
-int BaseHelper::BinToDecimal(char * pBinary, int length){
+int BaseHelper::BinToDecimal(bit * pBinary, int length){
 	int decimal = 0;
 	for (int i = length-1 ; i >= 0  ; i--){
 		decimal += pBinary[i]*pow(2,i);
@@ -25,8 +25,8 @@ int BaseHelper::BinToDecimal(char * pBinary, int length){
 
 }
 
-char *BaseHelper::DecimalToBin(int decimal, int length){
-	char *pBinary = (char *) malloc(sizeof(char)*length);
+bit *BaseHelper::DecimalToBin(int decimal, int length){
+	bit *pBinary = (bit *) malloc(sizeof(bit)*length);
 	int decimalTemp = decimal;
 	for (int i = 0 ; i < length ; i++){
 		pBinary[i] = decimalTemp%2;
@@ -37,7 +37,7 @@ char *BaseHelper::DecimalToBin(int decimal, int length){
 
 }
 
-void BaseHelper::PrintBin(char *data, int lenght){
+void BaseHelper::PrintBin(bit *data, int lenght){
 	for (int i = lenght-1; i >= 0  ; i--){
 		printf("%d", data[i]);
 

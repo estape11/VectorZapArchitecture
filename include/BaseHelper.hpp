@@ -13,9 +13,13 @@
 //
 //******************************************************
 
+#ifndef BASEHELPER
+#define BASEHELPER
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <Types.hpp>
 
 class BaseHelper{
 public:
@@ -25,7 +29,7 @@ public:
 	// @author estape11
 	// @params binary, length
 	// @return decimal
-	static int BinToDecimal(char *, int);
+	static int BinToDecimal(bit *, int);
 
 	// Converts a decimal into binary
 	// @author estape11
@@ -37,5 +41,7 @@ public:
 	// @author estape11
 	// @params binary, length
 	// @return void
-	static void PrintBin(char *, int);
+	static void PrintBin(bit *, int);
 };
+
+#endif

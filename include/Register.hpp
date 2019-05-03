@@ -15,7 +15,7 @@
 
 #include <string.h>
 #include <stdlib.h>
-
+#include <Types.hpp>
 #include <stdio.h>
 
 class Register{
@@ -24,7 +24,7 @@ public:
 		// Initial values
 		aWidth = 0;
 		apClk = NULL;
-		aEnable = false;
+		apEnable = NULL;
 		aRun = false;
 		apData = NULL;
 		apInput = NULL;
@@ -47,19 +47,13 @@ public:
 	// @author estape11
 	// @params signal
 	// @return void
-	void Clk(char *);
+	void Clk(bit *);
 
-	// Enable the register
+	// Sets the control signal
 	// @author estape11
-	// @params void
+	// @params signal
 	// @return void
-	void Enable(void);
-
-	// Disable the register
-	// @author estape11
-	// @params void
-	// @return void
-	void Disable(void);
+	void SetControlSignal(bit *);
 
 	// Put to run the register
 	// @author estape11
@@ -77,13 +71,13 @@ public:
 	// @author estape11
 	// @params void
 	// @return void
-	char *Data(void);
+	bit *Data(void);
 	
 	// Sets the input of the register
 	// @author estape11
 	// @params void
 	// @return void
-	void Input(char *);
+	void Input(bit *);
 
 	// Initialize the memory
 	// @author estape11
@@ -93,10 +87,10 @@ public:
 
 private:
 	int aWidth;
-	char *apClk;
-	bool aEnable;
+	bit *apClk;
+	bit *apEnable;
 	bool aRun;
-	char *apData;
-	char *apInput;
+	bit *apData;
+	bit *apInput;
 
 };

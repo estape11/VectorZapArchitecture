@@ -2,6 +2,7 @@
 #include <Register.hpp>
 #include <ScalarRegisterFile.hpp>
 #include <Types.hpp>
+#include <ScalarAlu.hpp>
 
 #include <pthread.h>
 #include <string.h>
@@ -21,6 +22,7 @@ void PrintData(char * data, int lenght){
 Clock clk;
 Register reg;
 ScalarRegisterFile RegisterBank;
+ScalarAlu scalarAlu;
 
 void* startRegisterBank(void* args){
 	RegisterBank.Run();
@@ -28,13 +30,22 @@ void* startRegisterBank(void* args){
 
 }
 
+void* startALU(void* args){
+	scalarAlu.Run();
+	pthread_exit(NULL);
+
+}
+
 void* startRegister(void* args){
-	reg.Enable();
+	//reg.Enable();
+	//bit *enable = (bit *) malloc(sizeof(bit));
+	char enable = 1;
+	reg.SetControlSignal(&enable);
 	reg.Run();
 	pthread_exit(NULL);
 
 }
-void* startALU(void* args){
+void* startClkKey(void* args){
 	clk.Frequency(1);
 	//clk.Signal((char*)args);
 	clk.RunKeyboard();
@@ -67,7 +78,7 @@ int main(int argc, const char* argv[]){
 	memset(rA,0,4);
 	memset(rB,0,4);
 	memset(rC,0,4);
-	rC[0] = 1;
+	rC[0] = 1; // Reg 1
 	rA[0] = 1;
 
 	// Out
@@ -78,6 +89,22 @@ int main(int argc, const char* argv[]){
 	clk = Clock();
 	clk.Initialize();
 	bit *signalClk = clk.Signal();
+
+	bit selector[] = {1,1,1,0};
+	bit operA[] = {1,1,1,0};
+	bit operB[] = {1,0,1,0};
+	printf("> operA = ");
+	PrintData(operA, 4);
+	printf("> operB = ");
+	PrintData(operB, 4);
+	scalarAlu = ScalarAlu();
+	scalarAlu.Selector(selector);
+	scalarAlu.SelectorWidth(4);
+	scalarAlu.OperA(operA);
+	scalarAlu.OperB(operB);
+	scalarAlu.Width(4);
+	scalarAlu.Initialize();
+	bit *resu = scalarAlu.Result();
 
 	reg = Register();
 	reg.Width(10);
@@ -107,9 +134,11 @@ int main(int argc, const char* argv[]){
 	pthread_t a;
 	pthread_t b;
 	pthread_t c;
+	pthread_t d;
 	pthread_create(&a, NULL, startClock, NULL);
 	pthread_create(&b, NULL, startRegister, NULL);
 	pthread_create(&c, NULL, startRegisterBank, NULL);
+	pthread_create(&d, NULL, startALU, NULL);
 
 	int i = 0;
 	while(true){
@@ -118,6 +147,8 @@ int main(int argc, const char* argv[]){
 			//PrintData(datoOut, 10);
 			printf(">> Reg A out = ");
 			PrintData(oA, 10);
+			printf(">> ALU RESU");
+			PrintData(resu, 4);
 			i++;
 			//printf(">> i = %d\n", i);
 		}
