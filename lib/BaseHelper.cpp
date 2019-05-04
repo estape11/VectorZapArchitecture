@@ -45,3 +45,13 @@ void BaseHelper::PrintBin(bit *data, int lenght){
 	printf("\n");
 	
 }
+
+bit *BaseHelper::StringToBin(std::string data, int width){
+	bit *pTemp = (bit *) malloc(sizeof(bit)+width);
+	for (int i = 0 ; i < width ; i++){
+		pTemp[width-i-1] = data[i] - 48;
+
+	}
+	return pTemp;
+	
+}

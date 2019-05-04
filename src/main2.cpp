@@ -3,6 +3,7 @@
 #include <ScalarRegisterFile.hpp>
 #include <Types.hpp>
 #include <ScalarAlu.hpp>
+#include <InstructionMemory.hpp>
 
 #include <pthread.h>
 #include <string.h>
@@ -23,9 +24,16 @@ Clock clk;
 Register reg;
 ScalarRegisterFile RegisterBank;
 ScalarAlu scalarAlu;
+InstructionMemory rom;
 
 void* startRegisterBank(void* args){
 	RegisterBank.Run();
+	pthread_exit(NULL);
+
+}
+
+void* startRom(void* args){
+	rom.Run();
 	pthread_exit(NULL);
 
 }
@@ -90,7 +98,7 @@ int main(int argc, const char* argv[]){
 	clk.Initialize();
 	bit *signalClk = clk.Signal();
 
-	bit selector[] = {1,1,1,0};
+	bit selector[] = {1,1,0,0};
 	bit operA[] = {1,1,1,0};
 	bit operB[] = {1,0,1,0};
 	printf("> operA = ");
@@ -105,6 +113,19 @@ int main(int argc, const char* argv[]){
 	scalarAlu.Width(4);
 	scalarAlu.Initialize();
 	bit *resu = scalarAlu.Result();
+
+	rom = InstructionMemory();
+	rom.Width(32);
+	rom.Length(100);
+	rom.Initialize();
+	bit *inRom = (bit *) malloc(sizeof(bit)*32);
+	memset(inRom,0,32);
+	//inRom[0] = 1;
+	//inRom[1] = 1;
+	//inRom[2] = 1;
+	rom.Input(inRom);
+	bit *outRom = rom.Output();
+	rom.LoadMemory("/home/estape/Desktop/Mem.ROM");
 
 	reg = Register();
 	reg.Width(10);
@@ -135,21 +156,24 @@ int main(int argc, const char* argv[]){
 	pthread_t b;
 	pthread_t c;
 	pthread_t d;
-	pthread_create(&a, NULL, startClock, NULL);
+	pthread_t e;
 	pthread_create(&b, NULL, startRegister, NULL);
 	pthread_create(&c, NULL, startRegisterBank, NULL);
 	pthread_create(&d, NULL, startALU, NULL);
+	pthread_create(&a, NULL, startClock, NULL);
+	pthread_create(&e, NULL, startRom, NULL);
 
 	int i = 0;
 	while(true){
 		if(*signalClk == 1){
-			printf("jj\n");
-			//PrintData(datoOut, 10);
 			printf(">> Reg A out = ");
 			PrintData(oA, 10);
-			printf(">> ALU RESU");
+			printf(">> ALU = ");
 			PrintData(resu, 4);
+			printf(">> ROM = ");
+			PrintData(outRom, 32);
 			i++;
+			memcpy(inRom, BaseHelper::DecimalToBin(i,32), 32);
 			//printf(">> i = %d\n", i);
 		}
 		if(i==3){

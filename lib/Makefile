@@ -18,12 +18,13 @@ REG=Register
 BASE=BaseHelper
 SREGFILE=ScalarRegisterFile
 SALU=ScalarAlu
+INSTMEM=InstructionMemory
 CC=g++
 INCLUDE=../include
 AR=ar
 OPTNS=-Wall -std=c++11
 
-all:$(CLK).o $(REG).o $(BASE).o $(SREGFILE).o $(SALU).o
+all:$(CLK).o $(REG).o $(BASE).o $(SREGFILE).o $(SALU).o $(INSTMEM).o
 
 $(CLK).o:$(CLK).cpp
 		$(CC) $(OPTNS) -c $(CLK).cpp -o $(CLK).o -I$(INCLUDE)
@@ -39,6 +40,9 @@ $(SREGFILE).o:$(SREGFILE).cpp
 
 $(SALU).o:$(SALU).cpp
 		$(CC) $(OPTNS) -c $(SALU).cpp -o $(SALU).o -I$(INCLUDE)
+
+$(INSTMEM).o:$(INSTMEM).cpp
+		$(CC) $(OPTNS) -c $(INSTMEM).cpp -o $(INSTMEM).o -I$(INCLUDE)
 
 clean:
 		rm -f *.o 

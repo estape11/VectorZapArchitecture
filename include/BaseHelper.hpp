@@ -21,6 +21,11 @@
 #include <math.h>
 #include <Types.hpp>
 
+#include <stdlib.h>
+#include <string.h>
+#include <fstream>
+#include <iostream>
+
 class BaseHelper{
 public:
 	BaseHelper(void){}
@@ -35,13 +40,20 @@ public:
 	// @author estape11
 	// @params decimal, length
 	// @return binary
-	static char *DecimalToBin(int, int);
+	static bit *DecimalToBin(int, int);
 
 	// Prints a binary value
 	// @author estape11
 	// @params binary, length
 	// @return void
 	static void PrintBin(bit *, int);
+
+	// Converts a string to binary
+	// @author estape11
+	// @params data, width
+	// @return void
+	static bit *StringToBin(std::string, int);
+
 };
 
 #endif

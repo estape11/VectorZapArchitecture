@@ -31,9 +31,9 @@ long Clock::Frequency(void){
 }
 
 void Clock::Run(void){
-	printf("> Clock started \u26A1\n");
+	//printf("> Clock started \u26A1\n");
 	aRun = true;
-	long nanoSecs;
+	long nanoSecs = 100000;
 	if (aFrequency == 1) {
 		nanoSecs = 999999999L;
 
@@ -41,8 +41,8 @@ void Clock::Run(void){
 		nanoSecs = 1000000000/aFrequency;
 
 	}
-	printf("> %ldns\n", nanoSecs);
-	printf("> %ldHz\n", aFrequency);
+	//printf("> %ldns\n", nanoSecs);
+	//printf("> %ldHz\n", aFrequency);
 
 	struct timespec sleepValue = {0};
 	sleepValue.tv_nsec = nanoSecs;
@@ -59,18 +59,18 @@ void Clock::Run(void){
 			*apSignal = 0;
 
 		}
-		printf("tick - > %d\n", *apSignal);
+		//printf("tick - > %d\n", *apSignal);
 	}
-	printf("> Clock stopped\n");
+	//printf("> Clock stopped\n");
 
 }
 
 void Clock::RunKeyboard(void){
-	printf("> Clock started \u26A1\n");
+	//printf("> Clock started \u26A1\n");
 	*apSignal = 0;
-	char c = '\0';
 	aRun = true;
-	while (std::cin.get(c))	{
+	//while (std::cin.get(c))	{
+	while (fgetc(stdin)){
 		if (!aRun){
 			break;
 
@@ -84,8 +84,7 @@ void Clock::RunKeyboard(void){
 		}
 		printf("tick - > %d\n", *apSignal);
 	}
-
-	printf("> Clock stopped\n");
+	//printf("> Clock stopped\n");
 
 }
 
@@ -97,4 +96,5 @@ void Clock::Stop(void){
 void Clock::Initialize(void){
 	apSignal = (char *) malloc(sizeof(char));
 	*apSignal = 0;
+
 }
