@@ -19,12 +19,14 @@ BASE=BaseHelper
 SREGFILE=ScalarRegisterFile
 SALU=ScalarAlu
 INSTMEM=InstructionMemory
+VREGFILE=VectorRegisterFile
+
 CC=g++
 INCLUDE=../include
 AR=ar
 OPTNS=-Wall -std=c++11
 
-all:$(CLK).o $(REG).o $(BASE).o $(SREGFILE).o $(SALU).o $(INSTMEM).o
+all:$(CLK).o $(REG).o $(BASE).o $(SREGFILE).o $(SALU).o $(INSTMEM).o $(VREGFILE).o
 
 $(CLK).o:$(CLK).cpp
 		$(CC) $(OPTNS) -c $(CLK).cpp -o $(CLK).o -I$(INCLUDE)
@@ -43,6 +45,9 @@ $(SALU).o:$(SALU).cpp
 
 $(INSTMEM).o:$(INSTMEM).cpp
 		$(CC) $(OPTNS) -c $(INSTMEM).cpp -o $(INSTMEM).o -I$(INCLUDE)
+
+$(VREGFILE).o:$(VREGFILE).cpp
+		$(CC) $(OPTNS) -c $(VREGFILE).cpp -o $(VREGFILE).o -I$(INCLUDE)
 
 clean:
 		rm -f *.o 

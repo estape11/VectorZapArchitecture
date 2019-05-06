@@ -6,7 +6,7 @@
 //		Programmer: Esteban Agüero Pérez (estape11)
 //		Language: C++
 //		Version: 1.0
-//		Last Update: 29/04/2019
+//		Last Update: 05/05/2019
 //
 //				Computer Architecture II
 //			Professor. Jeferson González Gómez
@@ -14,29 +14,29 @@
 //******************************************************
 
 #include <stdlib.h>
-#include <BaseHelper.hpp>
 #include <string.h>
 #include <Types.hpp>
+#include <BaseHelper.hpp>
 
-#include <stdio.h>
-
-class ScalarRegisterFile{
+class VectorRegisterFile {
 public:
-	ScalarRegisterFile(void){
-		// Initial Values
+	VectorRegisterFile(void){
 		apData = NULL;
 		apDataIn = NULL;
 		apOutA = NULL;
 		apOutB = NULL;
 		apRegA = NULL;
 		apRegB = NULL;
-		apRegC = NULL; 
+		apRegC = NULL;
 		aWidth = 0;
 		aLength = 0;
+		aAddressWidth = 0;
 		apEnableR = NULL;
 		apEnableW = NULL;
 		apClk = NULL;
 		aRun = false;
+		aWriteStatus = false;
+		aReadStatus = false;
 
 	}
 
@@ -117,21 +117,32 @@ public:
 	// @params void
 	// @return void
 	void Run(void);
-
+	
 private:
+	// Stored data
 	bit **apData;
+
+	// In/Out registers
 	bit *apDataIn;
 	bit *apOutA;
 	bit *apOutB;
+
+	// Addresses
 	bit *apRegA;
 	bit *apRegB;
 	bit *apRegC;
+
+	// Dimensions
 	int aWidth;
-	int aLength;	
+	int aLength;
 	int aAddressWidth;
+
+	// Control
 	bit *apEnableR;
 	bit *apEnableW;
 	bit *apClk;
 	bool aRun;
+	bool aWriteStatus;
+	bool aReadStatus;
 
 };

@@ -4,33 +4,31 @@
 #include <Types.hpp>
 #include <ScalarAlu.hpp>
 #include <InstructionMemory.hpp>
+#include <VectorRegisterFile.hpp>
 
 #include <pthread.h>
 #include <string.h>
 #include <math.h>
-
-// to decimal
-void PrintData(char * data, int lenght){
-	int temp = 0;
-	for (int i = lenght-1; i >= 0  ; i--){
-		printf("%d", data[i]);
-		temp+=data[i]*pow(2,i);
-	}
-	printf("\n");
-	//printf("-- %d\n", temp);
-}
 
 Clock clk;
 Register reg;
 ScalarRegisterFile RegisterBank;
 ScalarAlu scalarAlu;
 InstructionMemory rom;
+VectorRegisterFile vectorBank;
 
 void* startRegisterBank(void* args){
 	RegisterBank.Run();
 	pthread_exit(NULL);
 
 }
+
+void* startVectorBank(void* args){
+	vectorBank.Run();
+	pthread_exit(NULL);
+
+}
+
 
 void* startRom(void* args){
 	rom.Run();
@@ -78,6 +76,8 @@ int main(int argc, const char* argv[]){
 
 	bit *enW = (bit *) malloc(sizeof(bit));
 	bit *enR = (bit *) malloc(sizeof(bit));
+	bit *vEnW = (bit *) malloc(sizeof(bit));
+	bit *vEnR = (bit *) malloc(sizeof(bit));
 
 	// Registers address
 	bit *rA = (bit *) malloc(sizeof(bit)*4);
@@ -92,6 +92,8 @@ int main(int argc, const char* argv[]){
 	// Out
 	bit *oA;
 	bit *oB;
+	bit *vOA;
+	bit *vOB;
 
 	// Initialize objects
 	clk = Clock();
@@ -102,9 +104,9 @@ int main(int argc, const char* argv[]){
 	bit operA[] = {1,1,1,0};
 	bit operB[] = {1,0,1,0};
 	printf("> operA = ");
-	PrintData(operA, 4);
+	BaseHelper::PrintBin(operA, 4);
 	printf("> operB = ");
-	PrintData(operB, 4);
+	BaseHelper::PrintBin(operB, 4);
 	scalarAlu = ScalarAlu();
 	scalarAlu.Selector(selector);
 	scalarAlu.SelectorWidth(4);
@@ -135,6 +137,7 @@ int main(int argc, const char* argv[]){
 	reg.Clk(signalClk);
 
 	RegisterBank.Width(10);
+	RegisterBank.AddressWidth(4);
 	RegisterBank.Length(16);
 	RegisterBank.Initialize();
 	RegisterBank.SetControlSignals(enR, enW);
@@ -148,6 +151,27 @@ int main(int argc, const char* argv[]){
 	*enR = 1;
 	*enW = 0;
 
+	vectorBank = VectorRegisterFile();
+	vectorBank.Width(16);
+	vectorBank.AddressWidth(4);
+	vectorBank.Length(16);
+	vectorBank.Initialize();
+	vectorBank.SetControlSignals(vEnR, vEnW);
+	vectorBank.Clk(signalClk);
+	vOA = vectorBank.OutA();
+	vOB = vectorBank.OutB();
+	bit *vectorA = BaseHelper::DecimalToBin(2,4);
+	bit *vectorB = BaseHelper::DecimalToBin(0,4);
+	bit *vectorC = BaseHelper::DecimalToBin(2,4);
+	vectorBank.RegA(vectorA);
+	vectorBank.RegB(vectorB);
+	vectorBank.RegC(vectorC);
+	bit *dataVector = (bit *) malloc(sizeof(bit)*8);
+	vectorBank.DataIn(dataVector);
+	*vEnR = 0;
+	*vEnW = 0;
+
+
 	printf("> Objects created succesfully\n");
 
 	//while (true);
@@ -157,27 +181,47 @@ int main(int argc, const char* argv[]){
 	pthread_t c;
 	pthread_t d;
 	pthread_t e;
+	pthread_t f;
 	pthread_create(&b, NULL, startRegister, NULL);
 	pthread_create(&c, NULL, startRegisterBank, NULL);
 	pthread_create(&d, NULL, startALU, NULL);
 	pthread_create(&a, NULL, startClock, NULL);
 	pthread_create(&e, NULL, startRom, NULL);
+	pthread_create(&f, NULL, startVectorBank, NULL);
 
 	int i = 0;
+	int j = 0;
 	while(true){
 		if(*signalClk == 1){
 			printf(">> Reg A out = ");
-			PrintData(oA, 10);
+			BaseHelper::PrintBin(oA, 10);
+			printf(">> Reg Vect A out = ");
+			BaseHelper::PrintBin(vOA, 8);
 			printf(">> ALU = ");
-			PrintData(resu, 4);
+			BaseHelper::PrintBin(resu, 4);
 			printf(">> ROM = ");
-			PrintData(outRom, 32);
+			BaseHelper::PrintBin(outRom, 32);
 			i++;
 			memcpy(inRom, BaseHelper::DecimalToBin(i,32), 32);
 			//printf(">> i = %d\n", i);
+		} else{
+			j++;
+		}
+		if(i==0){
+			*vEnW = 1;
+			printf(">>> Writing 7 \n");
+			memcpy(dataVector, BaseHelper::DecimalToBin(7,8), 8);
+		}
+		if(i==1){
+			printf(">>> Writing 10 \n");
+			memcpy(dataVector, BaseHelper::DecimalToBin(10,8), 8);
+		}
+		if(i==2){
+			*vEnW = 0;
 		}
 		if(i==3){
 			//reg.Disable();
+			*vEnR = 1;
 			*enW = 1;
 			datoIn[3] = 1;
 

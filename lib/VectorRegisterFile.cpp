@@ -6,72 +6,72 @@
 //		Programmer: Esteban Agüero Pérez (estape11)
 //		Language: C++
 //		Version: 1.0
-//		Last Update: 29/04/2019
+//		Last Update: 05/05/2019
 //
 //				Computer Architecture II
 //			Professor. Jeferson González Gómez
 //
 //******************************************************
 
-#include <ScalarRegisterFile.hpp>
+#include <VectorRegisterFile.hpp>
 
-void ScalarRegisterFile::DataIn(bit *pDataIn){
+void VectorRegisterFile::DataIn(bit *pDataIn){
 	apDataIn = pDataIn;
 		
 }
 
-bit *ScalarRegisterFile::OutA(void){
+bit *VectorRegisterFile::OutA(void){
 	return apOutA;
 
 }
 
-bit *ScalarRegisterFile::OutB(void){
+bit *VectorRegisterFile::OutB(void){
 	return apOutB;
 
 }
 
-void ScalarRegisterFile::RegA(bit *pRegA){
+void VectorRegisterFile::RegA(bit *pRegA){
 	apRegA = pRegA;
 
 }
 
-void ScalarRegisterFile::RegB(bit *pRegB){
+void VectorRegisterFile::RegB(bit *pRegB){
 	apRegB = pRegB;
 
 }
 
-void ScalarRegisterFile::RegC(bit *pRegC){
+void VectorRegisterFile::RegC(bit *pRegC){
 	apRegC = pRegC;
 
 }
 
-void ScalarRegisterFile::SetControlSignals(bit *pEnableR, bit *pEnableW){
+void VectorRegisterFile::SetControlSignals(bit *pEnableR, bit *pEnableW){
 	apEnableR = pEnableR;
 	apEnableW = pEnableW;
 
 }
 
-void ScalarRegisterFile::Clk(bit *pClk){
+void VectorRegisterFile::Clk(bit *pClk){
 	apClk = pClk;
 
 }
 
-void ScalarRegisterFile::Width(int width){
+void VectorRegisterFile::Width(int width){
 	aWidth = width;
 
 }
 
-void ScalarRegisterFile::Length(int length){
+void VectorRegisterFile::Length(int length){
 	aLength = length;
 
 }
 
-void ScalarRegisterFile::AddressWidth(int width){
+void VectorRegisterFile::AddressWidth(int width){
 	aAddressWidth = width;
 
 }
 
-void ScalarRegisterFile::Initialize(void){
+void VectorRegisterFile::Initialize(void){
 	// Initialize the registers
 	apData = (bit **) malloc(sizeof(bit *)*aLength);
 	apOutA = (bit *) malloc(sizeof(bit)*aWidth);
@@ -88,7 +88,7 @@ void ScalarRegisterFile::Initialize(void){
 
 }
 
-void ScalarRegisterFile::Run(void){
+void VectorRegisterFile::Run(void){
 	aRun = true;
 	int indexA = 0;
 	int indexB = 0;
@@ -99,8 +99,18 @@ void ScalarRegisterFile::Run(void){
 			indexC = BaseHelper::BinToDecimal(apRegC, aAddressWidth);
 			// Reg zero cannot be written
 			if (indexC != 0 && indexC < aLength){
-				// Saves the new data
-				memcpy(apData[indexC], apDataIn, sizeof(bit)*aWidth);
+				// Saves the new Data
+				if (!aWriteStatus) { // Case Low
+					memcpy(apData[indexC], apDataIn, aWidth/2);
+					aWriteStatus = true; // To write the High part
+					while (*apClk == 0); // Waits the clock to change
+
+				} else { // Case High
+					memcpy(apData[indexC]+aWidth/2, apDataIn, aWidth/2);
+					aWriteStatus = false; // Restore the status
+					while (*apClk == 0); // Waits the clock to change
+
+				}
 
 			} // index out of bounds
 
@@ -111,8 +121,19 @@ void ScalarRegisterFile::Run(void){
 			indexB = BaseHelper::BinToDecimal(apRegB, aAddressWidth);
 
 			if (indexA < aLength && indexB < aLength){
-				memcpy(apOutA, apData[indexA], sizeof(bit)*aWidth);
-				memcpy(apOutB, apData[indexB], sizeof(bit)*aWidth);
+				if (!aReadStatus) { // Case low
+					memcpy(apOutA, apData[indexA], aWidth/2);
+					memcpy(apOutB, apData[indexB], aWidth/2);
+					aReadStatus = true; // To read the High part
+					while (*apClk == 1); // Waits the clock to change
+
+				} else { // Case High
+					memcpy(apOutA, apData[indexA]+aWidth/2, aWidth/2);
+					memcpy(apOutB, apData[indexB]+aWidth/2, aWidth/2);
+					aReadStatus = false; // Restore the status
+					while (*apClk == 1); // Waits the clock to change
+
+				}
 				
 			} // indexes out of bounds
 			
