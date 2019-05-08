@@ -125,7 +125,7 @@ void ControlUnit::Run(void){
 void ControlUnit::RunMutex(void){
 	// Mode
 	if (apInput[1] == 0 && apInput[0] == 0) { // NOP
-		if(apInput[3] == 1 && apInput[2] == 1) { // Halt
+		if (apInput[3] == 1 && apInput[2] == 1) { // Halt
 			// Stops the pipeline				
 			*apFetchControl = 0;
 			*apFetchDecodeEn = 0;
@@ -140,10 +140,81 @@ void ControlUnit::RunMutex(void){
 		}
 
 	} else if (apInput[1] == 0 && apInput[0] == 1) { // Scalar - Scalar
-		if(apInput[3] == 0 && apInput[2] == 0) { // Type A
-			memcpy(apOutput, apInput+5, 4); // Alu Sel
-			apOutput[4] = 1; // Scalar Reg Write
+		memset(apOutput, 0, 10);
+		if (apInput[3] == 0 && apInput[2] == 0) { // Type A
+			// Alu Sel
+			memcpy(apOutput, apInput+5, 4); 
+
+			// Scalar Reg Write
+			apOutput[4] = 1;
+
+			// Immediate
+			apOutput[5] = apInput[4];
+
+			// Register files
 			*apDecodeControl = 1;
+
+		} else if (apInput[3] == 0 && apInput[2] == 1) { // Type L
+			int tempOpCode = BaseHelper::BinToDecimal(apInput+5, 4);
+			switch (tempOpCode) {
+				case 0x0: // AND
+					// Alu sel
+					apOutput[0] = 1;
+					apOutput[1] = 1;
+					break;
+
+				case 0x1: // OR
+					apOutput[1] = 1;
+					break;
+
+				case 0x2: // XOR
+					apOutput[2] = 1;
+					break;
+
+				case 0x3: // Shift R
+					apOutput[1] = 1;
+					apOutput[2] = 1;
+					break;
+
+				case 0x4: // Shift L
+					apOutput[0] = 1;
+					apOutput[2] = 1;
+					break;
+
+				case 0x5: // Circular Shift R
+					break;
+
+				case 0x6: // Circular Shift L
+					break;
+
+			}
+
+			// Scalar Reg Write
+			apOutput[4] = 1;
+
+			// Immediate
+			apOutput[5] = apInput[4];
+
+			// Register files
+			*apDecodeControl = 1;
+
+		} else if (apInput[3] == 1 && apInput[2] == 0){ // Type D
+			int tempOpCode = BaseHelper::BinToDecimal(apInput+5, 4);
+			if (tempOpCode == 0) { // Assignation
+				// Alu sel
+				apOutput[1] = 1;
+				apOutput[3] = 1;
+
+				// Scalar Reg Write
+				apOutput[4] = 1;
+
+				// Immediate
+				apOutput[5] = apInput[4];
+
+				// Register files
+				*apDecodeControl = 1;
+
+			}
 
 		}
 

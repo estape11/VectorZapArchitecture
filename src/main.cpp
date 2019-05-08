@@ -48,6 +48,21 @@ void StartClk(void){
 	
 }
 
+void StartClkKey(void){
+	bool clk = false;
+	while (fgetc(stdin)) {
+		if (clk){
+			printf("\u21D3");
+
+		} else {
+			printf("\u21D1");
+		}
+		cond.notify_all();
+		clk = (clk)? false : true;
+	}
+	
+}
+
 void StartPc(void){
 	std::unique_lock<std::mutex> lck(mutex);
 	while (true) {
@@ -142,7 +157,7 @@ int main(){
 	pthread_t threads[10];
 	// Clock
 	gClk = Clock();
-	gClk.Frequency(100); //max 350 w/o prints
+	gClk.Frequency(10); //max 350 w/o prints
 	gClk.Initialize();
 
 	// Control Unit
@@ -191,14 +206,15 @@ int main(){
 	// Register Decode-Execute
 	gDecodeExecute = Register();
 	gDecodeExecute.Width(32);
-	gDecodeExecute.Ports(4);
+	gDecodeExecute.Ports(5);
 	gDecodeExecute.Initialize();
 	gDecodeExecute.Clk(gClk.Signal());
 	gDecodeExecute.SetControlSignal(gControlUnit.DecodeExecuteEn());
 	gDecodeExecute.Input(gControlUnit.Output(), 0); // first port
 	gDecodeExecute.Input(gScalarRegFile.OutA(), 1);
 	gDecodeExecute.Input(gScalarRegFile.OutB(), 2);
-	gDecodeExecute.Input(gFetchDecode.Output(0)+9, 3);
+	gDecodeExecute.Input(gFetchDecode.Output(0)+9, 3); // Dest. Register
+	gDecodeExecute.Input(gFetchDecode.Output(0)+17	, 4); // Immediate
 
 	// ------------------------------- Execute ------------------------------- //
 	// Scalar ALU
@@ -209,6 +225,8 @@ int main(){
 	gScalarAlu.OperB(gDecodeExecute.Output(2));
 	gScalarAlu.Width(32);
 	gScalarAlu.Initialize();
+	gScalarAlu.ImmB(gDecodeExecute.Output(4));
+	gScalarAlu.SelectorOpB(gDecodeExecute.Output(0)+5);
 
 	// Register Execute-Memory
 	gExecuteMemory = Register();
@@ -248,7 +266,7 @@ int main(){
 	std::thread t8(StartScalarAlu);
 	std::thread t9(StartExeMem);
 	std::thread t10(StartMemWb);
-	std::thread t1(StartClk);
+	std::thread t1(StartClk);//std::thread t1(StartClkKey);
 	
 	//std::unique_lock<std::mutex> lck1(mutex);
 	while (false) {
@@ -277,7 +295,7 @@ int main(){
 		BaseHelper::PrintBin(gMemoryWriteBack.Output(1),4);
 
 	}
-	
+
 	t1.join();
 	//gScalarRegFile.SaveMemory("/home/estape/Desktop/t.txt");
 	//pthread_join(threads[0], NULL);

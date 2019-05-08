@@ -24,9 +24,11 @@ public:
 		apSelector = NULL;
 		apOperA = NULL;
 		apOperB = NULL;
+		apImmB = NULL;
 		apResult = NULL;
 		aWidth = 0;
 		aRun = false;
+		apSelectorOpB = NULL;
 
 	}
 
@@ -42,11 +44,17 @@ public:
 	// @return void
 	void OperA(bit *);
 
-	// Sets the OperA pointer
+	// Sets the OperB pointer
 	// @author estape11
 	// @params operB
 	// @return void
 	void OperB(bit *);
+
+	// Sets the ImmB pointer
+	// @author estape11
+	// @params immB
+	// @return void
+	void ImmB(bit *);
 
 	// Sets the width of the ALU
 	// @author estape11
@@ -60,11 +68,17 @@ public:
 	// @return result
 	bit *Result(void);
 
-	// Sets the slector width
+	// Sets the selector width
 	// @author estape11
 	// @params width
 	// @return void
 	void SelectorWidth(int);
+
+	// Sets the selector for op B
+	// @author estape11
+	// @params selOpB
+	// @return void
+	void SelectorOpB(bit *);
 
 	// Initialize the memory
 	// @author estape11
@@ -84,9 +98,11 @@ private:
 	bit *apSelector;
 	bit *apOperA;
 	bit *apOperB;
+	bit *apImmB;
 	bit *apResult;
 	int aWidth;
 	int aSelectorWidth;
 	bool aRun;
+	bit *apSelectorOpB;
 
 };

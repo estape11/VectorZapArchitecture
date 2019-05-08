@@ -30,8 +30,18 @@ void ScalarAlu::OperB(bit *pOperB){
 
 }
 
+void ScalarAlu::ImmB(bit *pImmB){
+	apImmB = pImmB;
+
+}
+
 void ScalarAlu::Width(int width){
 	aWidth = width;
+}
+
+void ScalarAlu::SelectorOpB(bit * pSelOpB){
+	apSelectorOpB = pSelOpB;
+
 }
 
 bit *ScalarAlu::Result(void){
@@ -109,40 +119,95 @@ void ScalarAlu::RunMutex(void){
 	int selector = BaseHelper::BinToDecimal(apSelector, aSelectorWidth);
 	int dataOperA = BaseHelper::BinToDecimal(apOperA, aWidth);
 	int dataOperB = BaseHelper::BinToDecimal(apOperB, aWidth);
+	int dataImmOperB = BaseHelper::BinToDecimal(apImmB, 11); // can be a parameter
 	int resultTemp = 0;
+
 	switch (selector){
 		// case 0 it's not operation
 		case 0x0: // Add
 			// CHECK ABOUT FLAGS
-			//resultTemp = dataOperA + dataOperB;
-			resultTemp = 9;
+			if (*apSelectorOpB == 0){
+				resultTemp = dataOperA + dataOperB;
+
+			} else {
+				resultTemp = dataOperA + dataImmOperB;
+				
+			}
 			break;
 
 		case 0x1: // Subs
-			//resultTemp = dataOperA - dataOperB;
-			resultTemp = 19;
+			if (*apSelectorOpB == 0){
+				resultTemp = dataOperA - dataOperB;
+
+			} else {
+				resultTemp = dataOperA - dataImmOperB;
+
+			}
+
 			break;
 
 		case 0x2: // OR
-			resultTemp = dataOperA | dataOperB;
-			//printf(">>>>>> OPA = %d, OPB = %d, R = %d\n", dataOperA, dataOperB, resultTemp);
+			if (*apSelectorOpB == 0){
+				resultTemp = dataOperA | dataOperB;
+
+			} else {
+				resultTemp = dataOperA | dataImmOperB;
+
+			}
 			break;
 
 		case 0x3: // AND
-			resultTemp = dataOperA & dataOperB; 
-			//printf(">>>>>> OPA = %d, OPB = %d, R = %d\n", dataOperA, dataOperB, resultTemp);
+			if (*apSelectorOpB == 0){
+				resultTemp = dataOperA & dataOperB; 
+
+			} else {
+				resultTemp = dataOperA & dataImmOperB;
+
+			}
 			break;
 
 		case 0x4: // XOR
-			resultTemp = dataOperA ^ dataOperB;
+			if (*apSelectorOpB == 0){
+				resultTemp = dataOperA ^ dataOperB;
+
+			} else {
+				resultTemp = dataOperA ^ dataImmOperB;
+
+			}
 			break;
 
 		case 0x5: // Shift left
-			resultTemp = dataOperA << dataOperB;
+			if (*apSelectorOpB == 0){
+				resultTemp = dataOperA << dataOperB;
+
+			} else {
+				resultTemp = dataOperA << dataImmOperB;
+
+			}
 			break;
 
 		case 0x6: // Shift Right
-			resultTemp = dataOperA >> dataOperB;
+			if (*apSelectorOpB == 0){
+				resultTemp = dataOperA >> dataOperB;
+
+			} else {
+				resultTemp = dataOperA >> dataImmOperB;
+
+			}
+			break;
+
+		case 0x9: // OperA
+			resultTemp = dataOperA;
+			break;
+
+		case 0xA: // OperB
+			if (*apSelectorOpB == 0){
+				resultTemp = dataOperB;
+
+			} else {
+				resultTemp = dataImmOperB;
+
+			}
 			break;
 
 		default:

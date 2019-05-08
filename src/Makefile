@@ -35,6 +35,6 @@ $(APP):$(APP).o setup
 
 clean:
 		rm -rf $(OUT)
-		rm *.o
+		rm -f *.o
 
 .PHONY:clean setup
