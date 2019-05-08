@@ -55,3 +55,20 @@ bit *BaseHelper::StringToBin(std::string data, int width){
 	return pTemp;
 	
 }
+
+
+int BaseHelper::BinLength(bit *pBinary){
+	int count = 0;
+	int offset = 0;
+	if (pBinary != NULL){
+		while (*(pBinary + offset) == 0 || *(pBinary + offset) == 1) {
+			// Increment the count variable
+			count++;
+			// Advance to the next element of the array
+			offset++;
+
+		}
+	}
+    return count;
+
+}

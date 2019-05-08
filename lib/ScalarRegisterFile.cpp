@@ -71,6 +71,20 @@ void ScalarRegisterFile::AddressWidth(int width){
 
 }
 
+void ScalarRegisterFile::SaveMemory(char *pFile){
+	std::ofstream memFile (pFile);
+	for (int i = 0; i <aLength; i++ ){
+		for (int j = aWidth; j >= 0; j--){
+			memFile << (int) apData[i][j];
+
+		}
+		memFile << "\n";
+
+	}
+	memFile.close();
+
+}
+
 void ScalarRegisterFile::Initialize(void){
 	// Initialize the registers
 	apData = (bit **) malloc(sizeof(bit *)*aLength);
@@ -96,11 +110,12 @@ void ScalarRegisterFile::Run(void){
 
 	while (aRun) {
 		if (*apClk == 0 && *apEnableW == 1) {
-			indexC = BaseHelper::BinToDecimal(apRegC, aAddressWidth);
+			indexC = BaseHelper::BinToDecimal(apRegC, aAddressWidth);			
 			// Reg zero cannot be written
 			if (indexC != 0 && indexC < aLength){
 				// Saves the new data
-				memcpy(apData[indexC], apDataIn, sizeof(bit)*aWidth);
+				memcpy(apData[indexC], apDataIn, aWidth);
+				SaveMemory("/home/estape/t.txt");
 
 			} // index out of bounds
 
@@ -111,12 +126,41 @@ void ScalarRegisterFile::Run(void){
 			indexB = BaseHelper::BinToDecimal(apRegB, aAddressWidth);
 
 			if (indexA < aLength && indexB < aLength){
-				memcpy(apOutA, apData[indexA], sizeof(bit)*aWidth);
-				memcpy(apOutB, apData[indexB], sizeof(bit)*aWidth);
+				memcpy(apOutA, apData[indexA], aWidth);
+				memcpy(apOutB, apData[indexB], aWidth);
 				
 			} // indexes out of bounds
 			
 		} // Do not read
 	}
+
+}
+
+void ScalarRegisterFile::RunMutex(void){
+	if (aClock && *apEnableW == 1) {
+		int indexC = BaseHelper::BinToDecimal(apRegC, aAddressWidth);			
+		// Reg zero cannot be written
+		if (indexC != 0 && indexC < aLength){
+			// Saves the new data
+			memcpy(apData[indexC], apDataIn, aWidth);
+			SaveMemory("/home/estape/t.txt");
+
+		} // index out of bounds
+
+	} // Do not write
+
+	if (!aClock && *apEnableR == 1) {
+		int indexA = BaseHelper::BinToDecimal(apRegA, aAddressWidth);
+		int indexB = BaseHelper::BinToDecimal(apRegB, aAddressWidth);
+
+		if (indexA < aLength && indexB < aLength){
+			memcpy(apOutA, apData[indexA], aWidth);
+			memcpy(apOutB, apData[indexB], aWidth);
+			
+		} // indexes out of bounds
+		
+	} // Do not read
+
+	aClock = (aClock)? false : true;
 
 }

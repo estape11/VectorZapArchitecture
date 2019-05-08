@@ -1,3 +1,4 @@
+// Testing implementation
 #include <Clock.hpp>
 #include <Register.hpp>
 #include <ScalarRegisterFile.hpp>
@@ -185,9 +186,9 @@ int main(int argc, const char* argv[]){
 	pthread_create(&b, NULL, startRegister, NULL);
 	pthread_create(&c, NULL, startRegisterBank, NULL);
 	pthread_create(&d, NULL, startALU, NULL);
-	pthread_create(&a, NULL, startClock, NULL);
 	pthread_create(&e, NULL, startRom, NULL);
 	pthread_create(&f, NULL, startVectorBank, NULL);
+	pthread_create(&a, NULL, startClock, NULL);
 
 	int i = 0;
 	int j = 0;

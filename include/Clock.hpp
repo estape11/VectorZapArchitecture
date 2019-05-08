@@ -18,6 +18,7 @@
 #include <unistd.h>
 #include <time.h>
 #include <stdlib.h>
+#include <Types.hpp>
 
 class Clock{
 public:
@@ -26,6 +27,7 @@ public:
 		apSignal = NULL;
 		aRun = false;
 		aFrequency = 1;
+		aCycles = 0;
 
 	}
 
@@ -33,7 +35,13 @@ public:
 	// @author estape11
 	// @params void
 	// @return signal
-	char *Signal(void);
+	bit *Signal(void);
+
+	// Gets the current number of cycles
+	// @author estape11
+	// @params void
+	// @return cycles
+	int Cycles(void);
 
 	// Sets the frequency of the clock
 	// @author estape11
@@ -52,6 +60,8 @@ public:
 	// @params void
 	// @return void
 	void Run(void);
+
+	void RunMutex(void);
 
 	// Put the clock to run by keyboard (enter)
 	// @author estape11
@@ -75,5 +85,8 @@ private:
 	char *apSignal;
 	bool aRun;
 	long aFrequency;
+	int aCycles;
+	long aNanoSecs;
+	struct timespec aSleepValue;
 
 };

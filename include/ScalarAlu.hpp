@@ -78,6 +78,8 @@ public:
 	// @return void
 	void Run(void);
 
+	void RunMutex(void);
+
 private:
 	bit *apSelector;
 	bit *apOperA;

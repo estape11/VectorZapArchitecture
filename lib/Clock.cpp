@@ -15,9 +15,13 @@
 
 #include <Clock.hpp>
 
-char *Clock::Signal(void){
+bit *Clock::Signal(void){
 	return apSignal;
 
+}
+
+int Clock::Cycles(void) {
+	return aCycles;
 }
 
 void Clock::Frequency(long frequency){
@@ -34,11 +38,11 @@ void Clock::Run(void){
 	//printf("> Clock started \u26A1\n");
 	aRun = true;
 	long nanoSecs = 100000;
-	if (aFrequency == 1) {
+	if (aFrequency == 0) {
 		nanoSecs = 999999999L;
 
 	} else {
-		nanoSecs = 1000000000/aFrequency;
+		nanoSecs = 1000000000/(2*aFrequency);
 
 	}
 	//printf("> %ldns\n", nanoSecs);
@@ -48,20 +52,26 @@ void Clock::Run(void){
 	sleepValue.tv_nsec = nanoSecs;
 	sleepValue.tv_sec = 0;
 
-	*apSignal = 0;
+	//*apSignal = 1;
 	
 	while (aRun) {
+		printf("tick - > %d\n", *apSignal);
 		nanosleep(&sleepValue, NULL);
 		if (*apSignal == 0) {
 			*apSignal = 1;
+			aCycles++;
 
 		} else {
 			*apSignal = 0;
 
 		}
-		//printf("tick - > %d\n", *apSignal);
 	}
 	//printf("> Clock stopped\n");
+
+}
+
+void Clock::RunMutex(void) {
+	nanosleep(&aSleepValue, NULL);
 
 }
 
@@ -82,7 +92,7 @@ void Clock::RunKeyboard(void){
 			*apSignal = 0;
 
 		}
-		printf("tick - > %d\n", *apSignal);
+		// printf("tick - > %d\n", *apSignal);
 	}
 	//printf("> Clock stopped\n");
 
@@ -94,7 +104,19 @@ void Clock::Stop(void){
 }
 
 void Clock::Initialize(void){
-	apSignal = (char *) malloc(sizeof(char));
-	*apSignal = 0;
+	apSignal = (bit *) malloc(sizeof(bit));
+	*apSignal = 1;
+
+	aNanoSecs = 100000;
+	if (aFrequency == 0) {
+		aNanoSecs = 999999999L;
+
+	} else {
+		aNanoSecs = 500000000/(aFrequency);
+
+	}
+	aSleepValue = {0};
+	aSleepValue.tv_nsec = aNanoSecs;
+	aSleepValue.tv_sec = 0;
 
 }

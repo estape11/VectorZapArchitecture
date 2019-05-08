@@ -14,16 +14,12 @@
 
 CC=g++
 FLAGS=
-APP=main2
-LINKER_FLAGS=-lpthread
+APP=main
+LINKER_FLAGS=-pthread
 LIBS=../lib
 OUT=../bin
 OPTNS=-w -std=c++11
 INCLUDE=../include
-
-# Objects
-CLK_OBJ=Clock
-REG_OBJ=Register
 
 all:setup $(APP)
 
@@ -39,5 +35,6 @@ $(APP):$(APP).o setup
 
 clean:
 		rm -rf $(OUT)
+		rm *.o
 
 .PHONY:clean setup

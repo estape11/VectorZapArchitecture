@@ -20,13 +20,15 @@ SREGFILE=ScalarRegisterFile
 SALU=ScalarAlu
 INSTMEM=InstructionMemory
 VREGFILE=VectorRegisterFile
+PC=Pc
+CONUNI=ControlUnit
 
 CC=g++
 INCLUDE=../include
 AR=ar
 OPTNS=-Wall -std=c++11
 
-all:$(CLK).o $(REG).o $(BASE).o $(SREGFILE).o $(SALU).o $(INSTMEM).o $(VREGFILE).o
+all:$(CLK).o $(REG).o $(BASE).o $(SREGFILE).o $(SALU).o $(INSTMEM).o $(VREGFILE).o $(PC).o $(CONUNI).o
 
 $(CLK).o:$(CLK).cpp
 		$(CC) $(OPTNS) -c $(CLK).cpp -o $(CLK).o -I$(INCLUDE)
@@ -48,6 +50,12 @@ $(INSTMEM).o:$(INSTMEM).cpp
 
 $(VREGFILE).o:$(VREGFILE).cpp
 		$(CC) $(OPTNS) -c $(VREGFILE).cpp -o $(VREGFILE).o -I$(INCLUDE)
+
+$(PC).o:$(PC).cpp
+		$(CC) $(OPTNS) -c $(PC).cpp -o $(PC).o -I$(INCLUDE)
+
+$(CONUNI).o:$(CONUNI).cpp
+		$(CC) $(OPTNS) -c $(CONUNI).cpp -o $(CONUNI).o -I$(INCLUDE)
 
 clean:
 		rm -f *.o 

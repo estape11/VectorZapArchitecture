@@ -55,38 +55,42 @@ void ScalarAlu::Run(void){
 	int dataOperB = 0;
 	int resultTemp = 0;
 	while (aRun) {
-		selector = BaseHelper::BinToDecimal(apSelector, aWidth);
+		selector = BaseHelper::BinToDecimal(apSelector, aSelectorWidth);
 		dataOperA = BaseHelper::BinToDecimal(apOperA, aWidth);
 		dataOperB = BaseHelper::BinToDecimal(apOperB, aWidth);
 
 		switch (selector){
 			// case 0 it's not operation
-			case 0x1: // Add
+			case 0x0: // Add
 				// CHECK ABOUT FLAGS
-				resultTemp = dataOperA + dataOperB;
+				//resultTemp = dataOperA + dataOperB;
+				resultTemp = 9;
 				break;
 
-			case 0x2: // Subs
-				resultTemp = dataOperA - dataOperB;
+			case 0x1: // Subs
+				//resultTemp = dataOperA - dataOperB;
+				resultTemp = 19;
 				break;
 
-			case 0x3: // OR
+			case 0x2: // OR
 				resultTemp = dataOperA | dataOperB;
+				//printf(">>>>>> OPA = %d, OPB = %d, R = %d\n", dataOperA, dataOperB, resultTemp);
 				break;
 
-			case 0x4: // AND
-				resultTemp = dataOperA & dataOperB;
+			case 0x3: // AND
+				resultTemp = dataOperA & dataOperB; 
+				//printf(">>>>>> OPA = %d, OPB = %d, R = %d\n", dataOperA, dataOperB, resultTemp);
 				break;
 
-			case 0x5: // XOR
+			case 0x4: // XOR
 				resultTemp = dataOperA ^ dataOperB;
 				break;
 
-			case 0x6: // Shift left
+			case 0x5: // Shift left
 				resultTemp = dataOperA << dataOperB;
 				break;
 
-			case 0x7: // Shift Right
+			case 0x6: // Shift Right
 				resultTemp = dataOperA >> dataOperB;
 				break;
 
@@ -99,4 +103,54 @@ void ScalarAlu::Run(void){
 		memcpy(apResult, BaseHelper::DecimalToBin(resultTemp, aWidth), sizeof(bit)*aWidth);
 		
 	}
+}
+
+void ScalarAlu::RunMutex(void){
+	int selector = BaseHelper::BinToDecimal(apSelector, aSelectorWidth);
+	int dataOperA = BaseHelper::BinToDecimal(apOperA, aWidth);
+	int dataOperB = BaseHelper::BinToDecimal(apOperB, aWidth);
+	int resultTemp = 0;
+	switch (selector){
+		// case 0 it's not operation
+		case 0x0: // Add
+			// CHECK ABOUT FLAGS
+			//resultTemp = dataOperA + dataOperB;
+			resultTemp = 9;
+			break;
+
+		case 0x1: // Subs
+			//resultTemp = dataOperA - dataOperB;
+			resultTemp = 19;
+			break;
+
+		case 0x2: // OR
+			resultTemp = dataOperA | dataOperB;
+			//printf(">>>>>> OPA = %d, OPB = %d, R = %d\n", dataOperA, dataOperB, resultTemp);
+			break;
+
+		case 0x3: // AND
+			resultTemp = dataOperA & dataOperB; 
+			//printf(">>>>>> OPA = %d, OPB = %d, R = %d\n", dataOperA, dataOperB, resultTemp);
+			break;
+
+		case 0x4: // XOR
+			resultTemp = dataOperA ^ dataOperB;
+			break;
+
+		case 0x5: // Shift left
+			resultTemp = dataOperA << dataOperB;
+			break;
+
+		case 0x6: // Shift Right
+			resultTemp = dataOperA >> dataOperB;
+			break;
+
+		default:
+			resultTemp = 0;
+			break;
+
+	}
+
+	memcpy(apResult, BaseHelper::DecimalToBin(resultTemp, aWidth), sizeof(bit)*aWidth);
+
 }

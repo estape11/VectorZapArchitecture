@@ -6,7 +6,7 @@
 //		Programmer: Esteban Agüero Pérez (estape11)
 //		Language: C++
 //		Version: 1.0
-//		Last Update: 28/04/2019
+//		Last Update: 06/05/2019
 //
 //				Computer Architecture II
 //			Professor. Jeferson González Gómez
@@ -16,22 +16,18 @@
 #include <string.h>
 #include <stdlib.h>
 #include <Types.hpp>
-#include <stdio.h>
 #include <BaseHelper.hpp>
 
-class Register{
+class Pc{
 public:
-	Register(){
+	Pc(){
 		// Initial values
 		aWidth = 0;
 		apClk = NULL;
 		apEnable = NULL;
 		aRun = false;
 		apData = NULL;
-		apInput = NULL;
-		apTemp = NULL;
-		aPorts = 0;
-		aPortsUsed = 0;
+		aCounter = 0;
 		aClock = false;
 
 	}
@@ -41,18 +37,6 @@ public:
 	// @params width
 	// @return void
 	void Width(int);
-
-	// Gets the width of the register
-	// @author estape11
-	// @params void
-	// @return width
-	int Width(void);
-
-	// Sets t
-	// @author estape11
-	// @params void
-	// @return width
-	void Ports(int);
 
 	// Sets the clk signal
 	// @author estape11
@@ -82,18 +66,10 @@ public:
 
 	// Get the output of the register
 	// @author estape11
-	// @params port
-	// @return void
-	bit *Output(int);
-	
-	// Sets the input of the register
-	// @author estape11
 	// @params void
 	// @return void
-	//void Input(bit *);
-
-	void Input(bit *, int);
-
+	bit *Data(void);
+	
 	// Initialize the memory
 	// @author estape11
 	// @params void
@@ -103,13 +79,10 @@ public:
 private:
 	int aWidth;
 	bit *apClk;
+	bool aClock;
 	bit *apEnable;
 	bool aRun;
-	bit **apData;
-	bit **apInput;
-	int aPorts;
-	bit **apTemp;
-	int aPortsUsed;
-	bool aClock;
+	bit *apData;
+	int aCounter;
 
 };

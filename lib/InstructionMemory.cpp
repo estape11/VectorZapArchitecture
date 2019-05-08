@@ -39,6 +39,7 @@ void InstructionMemory::Initialize(void){
 	// Initialize the registers
 	apData = (bit **) malloc(sizeof(bit *)*aLength);
 	apOutput = (bit *) malloc(sizeof(bit)*aWidth);
+	memset(apOutput, 0, aWidth);
 
 }
 
@@ -50,11 +51,22 @@ void InstructionMemory::Run(void){
 		index = BaseHelper::BinToDecimal(apInput, aWidth);
 
 		if (index < aLength){
-			memcpy(apOutput, apData[index], sizeof(bit)*aWidth);
+			memcpy(apOutput, apData[index], aWidth);
+			//printf(">> %d\n", index);
+			//BaseHelper::PrintBin(apOutput, aWidth);
 			
 		} // indexes out of bounds
 
 	}
+}
+
+void InstructionMemory::RunMutex(void){
+	int index = BaseHelper::BinToDecimal(apInput, aWidth);
+
+	if (index < aLength){
+		memcpy(apOutput, apData[index], aWidth);
+		
+	} // indexes out of bounds
 }
 
 void InstructionMemory::LoadMemory(char *pFile){

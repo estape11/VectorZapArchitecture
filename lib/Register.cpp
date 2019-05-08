@@ -25,6 +25,12 @@ int Register::Width(void){
 
 }
 
+// REMOVE
+void Register::Ports(int ports) {
+	aPorts = ports;
+
+}
+
 void Register::Clk(bit *pSignal){
 	apClk = pSignal;
 
@@ -38,13 +44,58 @@ void Register::SetControlSignal(bit *pSignal){
 void Register::Run(void){
 	aRun = true;
 	while (aRun) {
-		// Read data at clk = 0
+		if (*apClk == 1 && *apEnable == 1) {
+			// memcpy(pTemp, apInput, aWidth);
+			for (int i = 0; i < aPortsUsed; i++){
+				memcpy(apTemp[i], apInput[i], BaseHelper::BinLength(apInput[i]));
+
+			}
+			//while (*apClk == 1);
+			
+		}
+
 		if (*apClk == 0 && *apEnable == 1) {
+			// memcpy(apData, pTemp, aWidth);
+			for (int i = 0; i < aPorts; i++){
+				memcpy(apData[i], apTemp[i], aWidth);
+
+			}
+			//while (*apClk == 0);
+
+		}
+		/**
+		// Read data at clk = 1
+		if (*apClk == 0 && *apEnable == 1) {
+			memcpy(pTemp, apInput, aWidth);
+
+		} else if (*apClk == 1 && *apEnable == 1) {
 			// Copy the input value to data
-			memcpy(apData, apInput, sizeof(bit)*aWidth);
+			memcpy(apData, pTemp, aWidth);
 			
 		} // else do nothing
+		**/
 	}
+
+}
+
+void Register::RunMutex(void){
+	if (!aClock && *apEnable == 1) {
+		for (int i = 0; i < aPortsUsed; i++){
+			memcpy(apTemp[i], apInput[i], BaseHelper::BinLength(apInput[i]));
+
+		}
+		
+	}
+
+	if (aClock && *apEnable == 1) {
+		for (int i = 0; i < aPorts; i++){
+			memcpy(apData[i], apTemp[i], aWidth);
+
+		}
+
+	}
+	
+	aClock = (aClock)? false : true;
 
 }
 
@@ -52,17 +103,36 @@ void Register::Stop(void){
 	aRun = false;
 }
 
-bit *Register::Data(void){
-	return apData;
+bit *Register::Output(int port){
+	return apData[port];
 
 }
 
-void Register::Input(bit *pInput){
-	apInput = pInput;
+//void Register::Input(bit *pInput){
+//	apInput = pInput;
+
+//}
+
+void Register::Input(bit *pInput, int port){
+	if (port < aPorts){
+		apInput[port] = pInput;
+		aPortsUsed++;
+
+	}
 
 }
 
 void Register::Initialize(void){
-	apData = (bit *) malloc(sizeof(bit)*aWidth);
+	apInput = (bit **) malloc(sizeof(bit *)*aPorts);
+	apData = (bit **) malloc(sizeof(bit *)*aPorts);
+	apTemp = (bit **) malloc(sizeof(bit *)*aPorts);
+	for (int i = 0; i < aPorts; i++){
+		apData[i] = (bit *) malloc(sizeof(bit)*aWidth);
+		apTemp[i] = (bit *) malloc(sizeof(bit)*aWidth);
+		memset(apData[i], 0, aWidth);
+		memset(apTemp[i], 0, aWidth);
+
+	}
+	// /memset(apData, 0, aWidth);
 
 }

@@ -37,6 +37,7 @@ public:
 		apEnableW = NULL;
 		apClk = NULL;
 		aRun = false;
+		aClock = false;
 
 	}
 
@@ -106,6 +107,12 @@ public:
 	// @return void
 	void AddressWidth(int);
 
+	// Saves the current status of registers
+	// @author estape11
+	// @params file
+	// @return void
+	void SaveMemory(char *);
+
 	// Initialize the memory
 	// @author estape11
 	// @params void
@@ -117,6 +124,8 @@ public:
 	// @params void
 	// @return void
 	void Run(void);
+
+	void RunMutex(void);
 
 private:
 	bit **apData;
@@ -133,5 +142,6 @@ private:
 	bit *apEnableW;
 	bit *apClk;
 	bool aRun;
+	bool aClock;
 
 };

@@ -37,6 +37,7 @@ public:
 	bit *Output(void);
 	void Initialize(void);
 	void Run(void);
+	void RunMutex(void);
 	void LoadMemory(char *);
 
 private:

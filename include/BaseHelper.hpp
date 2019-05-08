@@ -54,6 +54,12 @@ public:
 	// @return void
 	static bit *StringToBin(std::string, int);
 
+	// Gets the length of a binary array
+	// @author estape11
+	// @params binary
+	// @return void
+	static int BinLength(bit *);
+
 };
 
 #endif
