@@ -60,6 +60,18 @@ public:
 	// @return void
 	static int BinLength(bit *);
 
+	// Make the circular shift operation to the left
+	// @author estape11
+	// @params binary, width, value
+	// @return binaryShifted
+	static bit *CircularShiftLeft(bit *, int, int);
+
+	// Make the circular shift operation to the Right
+	// @author estape11
+	// @params binary, width, value
+	// @return binaryShifted
+	static bit *CircularShiftRight(bit *, int, int);
+
 };
 
 #endif

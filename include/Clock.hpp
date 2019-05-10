@@ -13,6 +13,9 @@
 //
 //******************************************************
 
+#ifndef CLOCK
+#define CLOCK
+
 #include <stdio.h>
 #include <iostream>
 #include <unistd.h>
@@ -90,3 +93,5 @@ private:
 	struct timespec aSleepValue;
 
 };
+
+#endif

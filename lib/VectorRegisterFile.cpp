@@ -88,6 +88,20 @@ void VectorRegisterFile::Initialize(void){
 
 }
 
+void VectorRegisterFile::SaveMemory(char *pFile){
+	std::ofstream memFile (pFile);
+	for (int i = 0; i <aLength; i++ ){
+		for (int j = aWidth-1; j >= 0; j--){
+			memFile << (int) apData[i][j];
+
+		}
+		memFile << "\n";
+
+	}
+	memFile.close();
+
+}
+
 void VectorRegisterFile::Run(void){
 	aRun = true;
 	int indexA = 0;
@@ -140,4 +154,49 @@ void VectorRegisterFile::Run(void){
 		} // Do not read
 	}
 
+}
+
+void VectorRegisterFile::RunMutex(void){
+	if (aClock && *apEnableW == 1) {
+		int indexC = BaseHelper::BinToDecimal(apRegC, aAddressWidth);
+		// Reg zero cannot be written
+		if (indexC != 0 && indexC < aLength){
+			// Saves the new Data
+			if (!aWriteStatus) { // Case Low
+				memcpy(apData[indexC], apDataIn, aWidth/2);
+				aWriteStatus = true; // To write the High part
+
+			} else { // Case High
+				memcpy(apData[indexC]+aWidth/2, apDataIn, aWidth/2);
+				aWriteStatus = false; // Restore the status
+
+			}
+			SaveMemory("/home/estape/vector.txt");
+
+		} // index out of bounds
+
+	} // Do not write
+
+	if (!aClock && *apEnableR == 1) {
+		int indexA = BaseHelper::BinToDecimal(apRegA, aAddressWidth);
+		int indexB = BaseHelper::BinToDecimal(apRegB, aAddressWidth);
+
+		if (indexA < aLength && indexB < aLength){
+			if (!aReadStatus) { // Case low
+				memcpy(apOutA, apData[indexA], aWidth/2);
+				memcpy(apOutB, apData[indexB], aWidth/2);
+				aReadStatus = true; // To read the High part
+
+			} else { // Case High
+				memcpy(apOutA, apData[indexA]+aWidth/2, aWidth/2);
+				memcpy(apOutB, apData[indexB]+aWidth/2, aWidth/2);
+				aReadStatus = false; // Restore the status
+
+			}
+			
+		} // indexes out of bounds
+		
+	} // Do not read
+
+	aClock = (aClock)? false : true;
 }

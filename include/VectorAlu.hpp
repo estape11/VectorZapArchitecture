@@ -6,33 +6,29 @@
 //		Programmer: Esteban Agüero Pérez (estape11)
 //		Language: C++
 //		Version: 1.0
-//		Last Update: 03/05/2019
+//		Last Update: 10/05/2019
 //
 //				Computer Architecture II
 //			Professor. Jeferson González Gómez
 //
 //******************************************************
 
-#ifndef SCALARALU
-#define SCALARALU
+#include <ScalarAlu.hpp>
 
-#include <Types.hpp>
-#include <BaseHelper.hpp>
-#include <stdlib.h>
-#include <string.h>
-
-class ScalarAlu {
+class VectorAlu{
 public:
-	ScalarAlu(void){
-		apSelector = NULL;
-		apOperA = NULL;
-		apOperB = NULL;
-		apImmB = NULL;
+	VectorAlu(void){
+		aLane1 = ScalarAlu();
+		aLane2 = ScalarAlu();
+		aLane3 = ScalarAlu();
+		aLane4 = ScalarAlu();
 		apResult = NULL;
+		apLane1Result = NULL;
+		apLane2Result = NULL;
+		apLane3Result = NULL;
+		apLane4Result = NULL;
 		aWidth = 0;
-		aRun = false;
-		apSelectorOpB = NULL;
-
+		aLaneWidth = 0;
 	}
 
 	// Sets the selector pointer
@@ -95,19 +91,17 @@ public:
 	// @return void
 	void Run(void);
 
-	void RunMutex(void);
-
 private:
-	bit *apSelector;
-	bit *apOperA;
-	bit *apOperB;
-	bit *apImmB;
+	ScalarAlu aLane1;
+	ScalarAlu aLane2;
+	ScalarAlu aLane3;
+	ScalarAlu aLane4;
 	bit *apResult;
+	bit *apLane1Result;
+	bit *apLane2Result;
+	bit *apLane3Result;
+	bit *apLane4Result;
 	int aWidth;
-	int aSelectorWidth;
-	bool aRun;
-	bit *apSelectorOpB;
-
+	int aLaneWidth;
+	
 };
-
-#endif

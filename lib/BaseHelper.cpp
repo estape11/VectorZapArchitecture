@@ -72,3 +72,29 @@ int BaseHelper::BinLength(bit *pBinary){
     return count;
 
 }
+
+bit *BaseHelper::CircularShiftRight(bit *pBinary, int width, int value){
+	bit *pTemp = (bit *) malloc(sizeof(bit)*width);
+	memcpy(pTemp, pBinary, width);
+	for (int i = 0 ; i < value ; i++){
+		bit first = pTemp[0];
+		memcpy(pTemp, pTemp+1, width);
+		pTemp[width-1] = first;
+
+	}
+	return pTemp;
+
+}
+
+bit *BaseHelper::CircularShiftLeft(bit *pBinary, int width, int value){
+	bit *pTemp = (bit *) malloc(sizeof(bit)*width);
+	memcpy(pTemp, pBinary, width);
+	for (int i = 0 ; i < value ; i++){
+		bit last = pTemp[width-1];
+		memcpy(pTemp+1, pTemp, width);
+		pTemp[0] = last;
+
+	}
+	return pTemp;
+	
+}

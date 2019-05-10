@@ -74,7 +74,7 @@ void ScalarRegisterFile::AddressWidth(int width){
 void ScalarRegisterFile::SaveMemory(char *pFile){
 	std::ofstream memFile (pFile);
 	for (int i = 0; i <aLength; i++ ){
-		for (int j = aWidth; j >= 0; j--){
+		for (int j = aWidth-1; j >= 0; j--){
 			memFile << (int) apData[i][j];
 
 		}
@@ -143,7 +143,7 @@ void ScalarRegisterFile::RunMutex(void){
 		if (indexC != 0 && indexC < aLength){
 			// Saves the new data
 			memcpy(apData[indexC], apDataIn, aWidth);
-			SaveMemory("/home/estape/t.txt");
+			SaveMemory("/home/estape/scalar.txt");
 
 		} // index out of bounds
 

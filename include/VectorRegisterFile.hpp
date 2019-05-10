@@ -37,6 +37,7 @@ public:
 		aRun = false;
 		aWriteStatus = false;
 		aReadStatus = false;
+		aClock = false;
 
 	}
 
@@ -112,11 +113,19 @@ public:
 	// @return void
 	void Initialize(void);
 
+	// Saves the memory to a file
+	// @author estape11
+	// @params file
+	// @return void
+	void SaveMemory(char *);
+
 	// Put to run the register
 	// @author estape11
 	// @params void
 	// @return void
 	void Run(void);
+
+	void RunMutex(void);
 	
 private:
 	// Stored data
@@ -144,5 +153,6 @@ private:
 	bool aRun;
 	bool aWriteStatus;
 	bool aReadStatus;
+	bool aClock;
 
 };

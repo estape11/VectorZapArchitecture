@@ -135,12 +135,13 @@ void ControlUnit::RunMutex(void){
 
 		} else { // NOP
 			memset(apOutput, 0, 10);
-			*apDecodeControl = 0;
-			
+			memset(apDecodeControl, 0, 2);
+
 		}
 
 	} else if (apInput[1] == 0 && apInput[0] == 1) { // Scalar - Scalar
 		memset(apOutput, 0, 10);
+		memset(apDecodeControl, 0, 2);
 		if (apInput[3] == 0 && apInput[2] == 0) { // Type A
 			// Alu Sel
 			memcpy(apOutput, apInput+5, 4); 
@@ -152,7 +153,7 @@ void ControlUnit::RunMutex(void){
 			apOutput[5] = apInput[4];
 
 			// Register files
-			*apDecodeControl = 1;
+			apDecodeControl[0] = 1;
 
 		} else if (apInput[3] == 0 && apInput[2] == 1) { // Type L
 			int tempOpCode = BaseHelper::BinToDecimal(apInput+5, 4);
@@ -182,9 +183,14 @@ void ControlUnit::RunMutex(void){
 					break;
 
 				case 0x5: // Circular Shift R
+					apOutput[2] = 1;
+					apOutput[3] = 1;
 					break;
 
 				case 0x6: // Circular Shift L
+					apOutput[0] = 1;
+					apOutput[1] = 1;
+					apOutput[3] = 1;
 					break;
 
 			}
@@ -196,7 +202,7 @@ void ControlUnit::RunMutex(void){
 			apOutput[5] = apInput[4];
 
 			// Register files
-			*apDecodeControl = 1;
+			apDecodeControl[0] = 1;
 
 		} else if (apInput[3] == 1 && apInput[2] == 0){ // Type D
 			int tempOpCode = BaseHelper::BinToDecimal(apInput+5, 4);
@@ -212,7 +218,7 @@ void ControlUnit::RunMutex(void){
 				apOutput[5] = apInput[4];
 
 				// Register files
-				*apDecodeControl = 1;
+				apDecodeControl[0] = 1;
 
 			}
 
@@ -220,14 +226,65 @@ void ControlUnit::RunMutex(void){
 
 	} else if (apInput[1] == 1 && apInput[0] == 0) { // Vector - Vector
 		memset(apOutput, 0, 10);
-		*apDecodeControl = 0;
+		memset(apDecodeControl, 0, 2);
+		if (apInput[3] == 0 && apInput[2] == 0) { // Type A
+			// Alu Sel
+			memcpy(apOutput, apInput+5, 4); 
+
+			// Immediate
+			apOutput[5] = 0;
+
+			// Vector Reg Write
+			apOutput[6] = 1;
+
+			// Register files
+			apDecodeControl[1] = 1; // Vector reg file read
+
+
+		} else if (apInput[3] == 1 && apInput[2] == 0){ // Type D
+			int tempOpCode = BaseHelper::BinToDecimal(apInput+5, 4);
+			if (tempOpCode == 0) { // Assignation
+				// Alu sel
+				apOutput[1] = 1;
+				apOutput[3] = 1;
+
+				// Immediate
+				apOutput[5] = 0;
+
+				// Vector Reg Write
+				apOutput[6] = 1;
+
+				// Register files
+				apDecodeControl[0] = 0;
+				apDecodeControl[1] = 1; // Vector reg file read
+
+			}
+
+		}
 
 	} else if (apInput[1] == 1 && apInput[0] == 1) { // Vector - Scalar
 		memset(apOutput, 0, 10);
-		*apDecodeControl = 0;
+		memset(apDecodeControl, 0, 2);
+		if (apInput[3] == 0 && apInput[2] == 0) { // Type A
+			// Alu Sel
+			memcpy(apOutput, apInput+5, 4); 
+
+			// Immediate
+			apOutput[5] = 1; // to use a scalar as operator
+
+			// Vector Reg Write
+			apOutput[6] = 1;
+
+			// Register files
+			apDecodeControl[0] = 1; // Scalar Reg file read
+			apDecodeControl[1] = 1; // Vector Reg file read
+
+
+		}
 
 	} else {
 		memset(apOutput, 0, 10);
+		memset(apDecodeControl, 0, 2);
 		*apDecodeControl = 0;
 		printf("Error: Unknown mode\n");
 

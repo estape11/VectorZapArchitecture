@@ -210,6 +210,36 @@ void ScalarAlu::RunMutex(void){
 			}
 			break;
 
+		case 0xB: // Circular Shift left
+			if (*apSelectorOpB == 0){
+				memcpy(apResult, 
+					BaseHelper::CircularShiftLeft(
+						apOperA, aWidth, dataOperB), aWidth);
+
+			} else {
+				memcpy(apResult, 
+					BaseHelper::CircularShiftLeft(
+						apOperA, aWidth, dataImmOperB), aWidth);
+
+			}
+			
+			return;
+
+		case 0xC: // Circular Shift Right
+			if (*apSelectorOpB == 0){
+				memcpy(apResult, 
+					BaseHelper::CircularShiftRight(
+						apOperA, aWidth, dataOperB), aWidth);
+
+			} else {
+				memcpy(apResult, 
+					BaseHelper::CircularShiftRight(
+						apOperA, aWidth, dataImmOperB), aWidth);
+
+			}
+
+			return;
+
 		default:
 			resultTemp = 0;
 			break;
