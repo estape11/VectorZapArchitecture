@@ -100,5 +100,7 @@ void VectorAlu::Run(void){
 	memcpy(apResult+aLaneWidth, apLane2Result, aLaneWidth);
 	memcpy(apResult+2*aLaneWidth, apLane3Result, aLaneWidth);
 	memcpy(apResult+3*aLaneWidth, apLane4Result, aLaneWidth);
+	//printf(">> Vector Alu result >> ");
+	//BaseHelper::PrintBin(apResult, aWidth);
 	
 }

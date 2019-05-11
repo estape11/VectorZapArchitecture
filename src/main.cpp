@@ -22,6 +22,7 @@
 #include <ScalarRegisterFile.hpp>
 #include <VectorRegisterFile.hpp>
 #include <VectorAlu.hpp>
+#include <DataMemory.hpp>
 
 #include <condition_variable>
 #include <mutex>
@@ -42,6 +43,7 @@ Register gExecuteMemory;
 Register gMemoryWriteBack;
 VectorRegisterFile gVectorRegFile;
 VectorAlu gVectorAlu;
+DataMemory gDataMemory;
 
 void StartClk(void){
 	while (true) {
@@ -167,6 +169,16 @@ void StartExeMem(void){
 
 }
 
+void StartDataMemory(void){
+	std::unique_lock<std::mutex> lck(mutex);
+	while (true) {
+		cond.wait(lck); 
+		gDataMemory.Run();
+
+	}
+
+}
+
 void StartMemWb(void){
 	std::unique_lock<std::mutex> lck(mutex);
 	while (true) {
@@ -180,7 +192,7 @@ void StartMemWb(void){
 int main(){
 	// Clock
 	gClk = Clock();
-	gClk.Frequency(100); //max 350 w/o prints
+	gClk.Frequency(200); //max 200 w/o prints
 	gClk.Initialize();
 
 	// Control Unit
@@ -230,7 +242,7 @@ int main(){
 	gVectorRegFile = VectorRegisterFile();
 	gVectorRegFile.Width(64);
 	gVectorRegFile.AddressWidth(4);
-	gVectorRegFile.Length(5);
+	gVectorRegFile.Length(6);
 	gVectorRegFile.Initialize();
 	gVectorRegFile.Clk(gClk.Signal());
 	gVectorRegFile.RegA(gFetchDecode.Output(0)+13);
@@ -265,7 +277,7 @@ int main(){
 
 	// Vector ALU
 	gVectorAlu = VectorAlu();
-	gVectorAlu.Selector(gDecodeExecute.Output(0)); // control signals
+	gVectorAlu.Selector(gDecodeExecute.Output(0)+10); // control signals
 	gVectorAlu.SelectorWidth(4);
 	gVectorAlu.OperA(gDecodeExecute.Output(5));
 	gVectorAlu.OperB(gDecodeExecute.Output(6));
@@ -277,16 +289,31 @@ int main(){
 	// Register Execute-Memory
 	gExecuteMemory = Register();
 	gExecuteMemory.Width(32);
-	gExecuteMemory.Ports(4);
+	gExecuteMemory.Ports(5);
 	gExecuteMemory.Initialize();
 	gExecuteMemory.Clk(gClk.Signal());
 	gExecuteMemory.SetControlSignal(gControlUnit.ExecuteMemoryEn());
-	gExecuteMemory.Input(gDecodeExecute.Output(0), 0);
-	gExecuteMemory.Input(gDecodeExecute.Output(3), 1);
+	gExecuteMemory.Input(gDecodeExecute.Output(0), 0); // Control
+	gExecuteMemory.Input(gDecodeExecute.Output(3), 1); // Dest. Reg
 	gExecuteMemory.Input(gScalarAlu.Result(), 2);
 	gExecuteMemory.Input(gVectorAlu.Result(), 3);
+	gExecuteMemory.Input(gDecodeExecute.Output(2), 4); // Scalar Reg content
 
 	// ------------------------------- Memory ------------------------------- //
+	// Data Memory
+	gDataMemory = DataMemory();
+	gDataMemory.Width(32);
+	gDataMemory.Length(250);
+	gDataMemory.Initialize();
+	gDataMemory.SetControlSignals(
+		gExecuteMemory.Output(0)+9, 
+		gExecuteMemory.Output(0)+8, 
+		gExecuteMemory.Output(0)+7);
+	gDataMemory.InScalar(gExecuteMemory.Output(4));
+	gDataMemory.InVector(gExecuteMemory.Output(3));
+	gDataMemory.Address(gExecuteMemory.Output(2));
+	gDataMemory.LoadMemory("/home/estape/Desktop/Mem.RAM");
+
 	// Register Memory-WriteBack
 	gMemoryWriteBack = Register();
 	gMemoryWriteBack.Width(32);
@@ -296,8 +323,8 @@ int main(){
 	gMemoryWriteBack.SetControlSignal(gControlUnit.MemoryWriteBackEn());
 	gMemoryWriteBack.Input(gExecuteMemory.Output(0), 0);
 	gMemoryWriteBack.Input(gExecuteMemory.Output(1), 1);
-	gMemoryWriteBack.Input(gExecuteMemory.Output(2), 2);
-	gMemoryWriteBack.Input(gExecuteMemory.Output(3), 3);
+	gMemoryWriteBack.Input(gDataMemory.Output(), 2);
+	gMemoryWriteBack.Input(gDataMemory.Output(), 3);
 
 	// ------------------------------- WriteBack ------------------------------- //
 	gScalarRegFile.SetControlSignals(gControlUnit.DecodeControl(), gMemoryWriteBack.Output(0)+4);
@@ -319,34 +346,43 @@ int main(){
 	std::thread t8(StartScalarAlu);
 	std::thread t12(StartVectorAlu);
 	std::thread t9(StartExeMem);
+	std::thread t13(StartDataMemory);
 	std::thread t10(StartMemWb);
 	std::thread t1(StartClk);//std::thread t1(StartClkKey);
 	
 	//std::unique_lock<std::mutex> lck1(mutex);
 	while (false) {
-		//printf(">> Instruction on Decode >> ");
-		printf(">> ");
-		BaseHelper::PrintBin(gFetchDecode.Output(0),32);
+		if (false) {
+			//printf(">> Instruction on Decode >> ");
+			printf(">> ");
+			BaseHelper::PrintBin(gFetchDecode.Output(0),32);
 
-		//printf(">> Control Flags (Decode) >> ");
-		printf(">> ");
-		BaseHelper::PrintBin(gControlUnit.Output(),10);
+			//printf(">> Control Flags (Decode) >> ");
+			printf(">> ");
+			BaseHelper::PrintBin(gControlUnit.Output(),10);
 
-		//printf(">> Control Flags (Execute) >> ");
-		printf(">> ");
-		BaseHelper::PrintBin(gDecodeExecute.Output(0),10);
+			//printf(">> Control Flags (Execute) >> ");
+			printf(">> ");
+			BaseHelper::PrintBin(gDecodeExecute.Output(0),10);
 
-		//printf(">> Control Flags (Memory) >> ");
-		printf(">> ");
-		BaseHelper::PrintBin(gExecuteMemory.Output(0),10);
+			//printf(">> Control Flags (Memory) >> ");
+			printf(">> ");
+			BaseHelper::PrintBin(gExecuteMemory.Output(0),10);
 
-		//printf(">> Control Flags (WriteBack) >> ");
-		printf(">> ");
-		BaseHelper::PrintBin(gMemoryWriteBack.Output(0),10);
+			//printf(">> Control Flags (WriteBack) >> ");
+			printf(">> ");
+			BaseHelper::PrintBin(gMemoryWriteBack.Output(0),10);
 
-		//printf(">> Rc (WriteBack) >> ");
+			//printf(">> Rc (WriteBack) >> ");
+			printf(">> ");
+			BaseHelper::PrintBin(gMemoryWriteBack.Output(1),4);
+		}
+		//printf(">>> ");
+		//BaseHelper::PrintBin(gVectorRegFile.OutB(), 32);
+		//printf(">> ");
+		//BaseHelper::PrintBin(gDecodeExecute.Output(6), 32);
 		printf(">> ");
-		BaseHelper::PrintBin(gMemoryWriteBack.Output(1),4);
+		BaseHelper::PrintBin(gMemoryWriteBack.Output(1), 10);
 
 	}
 

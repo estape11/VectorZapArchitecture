@@ -81,7 +81,7 @@ void Register::Run(void){
 void Register::RunMutex(void){
 	if (!aClock && *apEnable == 1) {
 		for (int i = 0; i < aPortsUsed; i++){
-			memcpy(apTemp[i], apInput[i], BaseHelper::BinLength(apInput[i]));
+			memcpy(apTemp[i], apInput[i], aWidth);
 
 		}
 		

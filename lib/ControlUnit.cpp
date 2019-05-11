@@ -57,7 +57,7 @@ bit *ControlUnit::MemoryWriteBackEn(void){
 
 void ControlUnit::Initialize(void){
 	// Modify every time is a signal added
-	apOutput = (bit *) malloc(sizeof(bit)*10);
+	apOutput = (bit *) malloc(sizeof(bit)*16);
 
 	apFetchControl = (bit *) malloc(sizeof(bit)*1);
 	*apFetchControl = 1;
@@ -90,7 +90,7 @@ void ControlUnit::Run(void){
 				*apMemoryWriteBackEn = 0;
 
 			} else { // NOP
-				memset(apOutput, 0, 10);
+				memset(apOutput, 0, 16);
 				*apDecodeControl = 0;
 				
 			}
@@ -104,15 +104,15 @@ void ControlUnit::Run(void){
 			}
 
 		} else if (apInput[1] == 1 && apInput[0] == 0) { // Vector - Vector
-			memset(apOutput, 0, 10);
+			memset(apOutput, 0, 16);
 			*apDecodeControl = 0;
 
 		} else if (apInput[1] == 1 && apInput[0] == 1) { // Vector - Scalar
-			memset(apOutput, 0, 10);
+			memset(apOutput, 0, 16);
 			*apDecodeControl = 0;
 
 		} else {
-			memset(apOutput, 0, 10);
+			memset(apOutput, 0, 16);
 			*apDecodeControl = 0;
 			printf("Error: Unknown mode\n");
 
@@ -134,17 +134,32 @@ void ControlUnit::RunMutex(void){
 			*apMemoryWriteBackEn = 0;
 
 		} else { // NOP
-			memset(apOutput, 0, 10);
+			memset(apOutput, 0, 16);
 			memset(apDecodeControl, 0, 2);
 
 		}
 
 	} else if (apInput[1] == 0 && apInput[0] == 1) { // Scalar - Scalar
-		memset(apOutput, 0, 10);
+		memset(apOutput, 0, 16);
 		memset(apDecodeControl, 0, 2);
 		if (apInput[3] == 0 && apInput[2] == 0) { // Type A
-			// Alu Sel
-			memcpy(apOutput, apInput+5, 4); 
+			// Scalar Reg Read
+			apDecodeControl[0] = 1;
+
+			// Vector Reg Read
+			// Stays in zero
+
+			// Scalar Alu Sel
+			int tempOpCode = BaseHelper::BinToDecimal(apInput+5, 4);
+			switch (tempOpCode) {
+				case 0x0: // Oper +
+					// All in zero
+					break;
+
+				case 0x1: // Oper -
+					apOutput[0] = 1;
+					break;
+			}
 
 			// Scalar Reg Write
 			apOutput[4] = 1;
@@ -152,10 +167,29 @@ void ControlUnit::RunMutex(void){
 			// Immediate
 			apOutput[5] = apInput[4];
 
-			// Register files
-			apDecodeControl[0] = 1;
+			// Vector Reg Write
+			// Stays in zero
+
+			// InSel
+			// Stays in zero
+
+			// Mem Read
+			// Stays in zero
+
+			// Mem Write
+			// Stays in zero
+
+			// Vector Alu Sel
+			// Stays in zero			
 
 		} else if (apInput[3] == 0 && apInput[2] == 1) { // Type L
+			// Scalar Reg Read
+			apDecodeControl[0] = 1;
+
+			// Vector Reg Read
+			// Stays in zero
+
+			// Scalar Alu Sel
 			int tempOpCode = BaseHelper::BinToDecimal(apInput+5, 4);
 			switch (tempOpCode) {
 				case 0x0: // AND
@@ -192,7 +226,6 @@ void ControlUnit::RunMutex(void){
 					apOutput[1] = 1;
 					apOutput[3] = 1;
 					break;
-
 			}
 
 			// Scalar Reg Write
@@ -201,13 +234,31 @@ void ControlUnit::RunMutex(void){
 			// Immediate
 			apOutput[5] = apInput[4];
 
-			// Register files
-			apDecodeControl[0] = 1;
+			// Vector Reg Write
+			// Stays in zero
+
+			// InSel
+			// Stays in zero
+
+			// Mem Read
+			// Stays in zero
+
+			// Mem Write
+			// Stays in zero
+
+			// Vector Alu Sel
+			// Stays in zero
 
 		} else if (apInput[3] == 1 && apInput[2] == 0){ // Type D
 			int tempOpCode = BaseHelper::BinToDecimal(apInput+5, 4);
 			if (tempOpCode == 0) { // Assignation
-				// Alu sel
+				// Scalar Reg Read
+				apDecodeControl[0] = 1;
+
+				// Vector Reg Read
+				// Stays in zero
+
+				// Scalar Alu Sel
 				apOutput[1] = 1;
 				apOutput[3] = 1;
 
@@ -217,57 +268,185 @@ void ControlUnit::RunMutex(void){
 				// Immediate
 				apOutput[5] = apInput[4];
 
-				// Register files
+				// Vector Reg Write
+				// Stays in zero
+
+				// InSel
+				// Stays in zero
+
+				// Mem Read
+				// Stays in zero
+
+				// Mem Write
+				// Stays in zero
+
+				// Vector Alu Sel
+				// Stays in zero
+
+			} else if (tempOpCode == 1) { // Store
+				// Scalar Reg Read
 				apDecodeControl[0] = 1;
 
+				// Vector Reg Read
+				// Stays in zero
+
+				// Scalar Alu Sel
+				apOutput[0] = 1;
+				apOutput[3] = 1;
+
+				// Scalar Reg Write
+				// Stays in zero
+
+				// Immediate
+				apOutput[5] = apInput[4];
+
+				// Vector Reg Write
+				// Stays in zero
+
+				// InSel
+				// Stays in zero
+
+				// Mem Read
+				// Stays in zero
+
+				// Mem Write
+				apOutput[9] = 1;
+
+				// Vector Alu Sel
+				// Stays in zero
+
+			} else if (tempOpCode == 2) { // Load
+				// Scalar Reg Read
+				apDecodeControl[0] = 1;
+
+				// Vector Reg Read
+				// Stays in zero
+
+				// Scalar Alu Sel
+				apOutput[1] = 1;
+				apOutput[3] = 1;
+
+				// Scalar Reg Write
+				apOutput[4] = 1;
+
+				// Immediate
+				apOutput[5] = apInput[4];
+
+				// Vector Reg Write
+				// Stays in zero
+
+				// InSel
+				// Stays in zero
+
+				// Mem Read
+				apOutput[8] = 1;
+
+				// Mem Write
+				// Stays in zero
+
+				// Vector Alu Sel
+				// Stays in zero
+				
 			}
 
 		}
 
 	} else if (apInput[1] == 1 && apInput[0] == 0) { // Vector - Vector
-		memset(apOutput, 0, 10);
+		memset(apOutput, 0, 16);
 		memset(apDecodeControl, 0, 2);
 		if (apInput[3] == 0 && apInput[2] == 0) { // Type A
-			// Alu Sel
-			memcpy(apOutput, apInput+5, 4); 
+			// Scalar Reg Read
+			// Stays in zero
+
+			// Vector Reg Read
+			apDecodeControl[1] = 1; 
+
+			// Scalar Alu Sel
+			// Stays in zero
+
+			// Scalar Reg Write
+			// Stays in zero
 
 			// Immediate
-			apOutput[5] = 0;
+			// Stays in zero
 
 			// Vector Reg Write
 			apOutput[6] = 1;
 
-			// Register files
-			apDecodeControl[1] = 1; // Vector reg file read
+			// InSel
+			apOutput[7] = 1;
 
+			// Mem Read
+			// Stays in zero
+
+			// Mem Write
+			// Stays in zero
+
+			// Vector Alu Sel
+			int tempOpCode = BaseHelper::BinToDecimal(apInput+5, 4);
+			switch (tempOpCode) {
+				case 0x0: // Oper +
+					// All in zero
+					break;
+
+				case 0x1: // Oper -
+					apOutput[10] = 1;
+					break;
+			}
 
 		} else if (apInput[3] == 1 && apInput[2] == 0){ // Type D
 			int tempOpCode = BaseHelper::BinToDecimal(apInput+5, 4);
 			if (tempOpCode == 0) { // Assignation
-				// Alu sel
-				apOutput[1] = 1;
-				apOutput[3] = 1;
+				// Scalar Reg Read
+				// Stays in zero
+
+				// Vector Reg Read
+				apDecodeControl[1] = 1;
+
+				// Scalar Alu Sel
+				// Stays in zero
+
+				// Scalar Reg Write
+				// Stays in zero
 
 				// Immediate
-				apOutput[5] = 0;
+				// Stays in zero
 
 				// Vector Reg Write
 				apOutput[6] = 1;
 
-				// Register files
-				apDecodeControl[0] = 0;
-				apDecodeControl[1] = 1; // Vector reg file read
+				// InSel
+				apOutput[7] = 1;
+
+				// Mem Read
+				// Stays in zero
+
+				// Mem Write
+				// Stays in zero
+
+				// Vector Alu Sel
+				apOutput[11] = 1;
+				apOutput[13] = 1;
 
 			}
 
 		}
 
 	} else if (apInput[1] == 1 && apInput[0] == 1) { // Vector - Scalar
-		memset(apOutput, 0, 10);
+		memset(apOutput, 0, 16);
 		memset(apDecodeControl, 0, 2);
 		if (apInput[3] == 0 && apInput[2] == 0) { // Type A
-			// Alu Sel
-			memcpy(apOutput, apInput+5, 4); 
+			// Scalar Reg Read
+			apDecodeControl[0] = 1;
+
+			// Vector Reg Read
+			apDecodeControl[1] = 1;
+
+			// Scalar Alu Sel
+			// Stays in zero
+
+			// Scalar Reg Write
+			// Stays in zero
 
 			// Immediate
 			apOutput[5] = 1; // to use a scalar as operator
@@ -275,17 +454,166 @@ void ControlUnit::RunMutex(void){
 			// Vector Reg Write
 			apOutput[6] = 1;
 
-			// Register files
-			apDecodeControl[0] = 1; // Scalar Reg file read
-			apDecodeControl[1] = 1; // Vector Reg file read
+			// InSel
+			apOutput[7] = 1;
 
+			// Mem Read
+			// Stays in zero
 
+			// Mem Write
+			// Stays in zero
+
+			// Vector Alu Sel
+			int tempOpCode = BaseHelper::BinToDecimal(apInput+5, 4);
+			switch (tempOpCode) {
+				case 0x0: // Oper +
+					// All in zero
+					break;
+
+				case 0x1: // Oper -
+					apOutput[10] = 1;
+					break;
+			}
+
+		} else if (apInput[3] == 0 && apInput[2] == 1) { // Type L
+			// Scalar Reg Read
+			apDecodeControl[0] = 1;
+
+			// Vector Reg Read
+			apDecodeControl[1] = 1;
+
+			// Scalar Alu Sel
+			// Stays in zero
+
+			// Scalar Reg Write
+			// Stays in zero
+
+			// Immediate
+			apOutput[5] = 1; // to use a scalar as operator
+
+			// Vector Reg Write
+			apOutput[6] = 1;
+
+			// InSel
+			apOutput[7] = 1;
+
+			// Mem Read
+			// Stays in zero
+
+			// Mem Write
+			// Stays in zero
+
+			// Vector Alu Sel
+			int tempOpCode = BaseHelper::BinToDecimal(apInput+5, 4);
+			switch (tempOpCode) {
+				case 0x0: // AND
+					apOutput[10] = 1;
+					apOutput[11] = 1;
+					break;
+
+				case 0x1: // OR
+					apOutput[11] = 1;
+					break;
+
+				case 0x2: // XOR
+					apOutput[12] = 1;
+					break;
+
+				case 0x3: // Shift R
+					apOutput[11] = 1;
+					apOutput[12] = 1;
+					break;
+
+				case 0x4: // Shift L
+					apOutput[10] = 1;
+					apOutput[12] = 1;
+					break;
+
+				case 0x5: // Circular Shift R
+					apOutput[12] = 1;
+					apOutput[13] = 1;
+					break;
+
+				case 0x6: // Circular Shift L
+					apOutput[10] = 1;
+					apOutput[11] = 1;
+					apOutput[13] = 1;
+					break;
+			}
+
+		} else if (apInput[3] == 1 && apInput[2] == 0){ // Type D
+			int tempOpCode = BaseHelper::BinToDecimal(apInput+5, 4);
+			if (tempOpCode == 1) { // Store
+				// Scalar Reg Read
+				apDecodeControl[0] = 1;
+
+				// Vector Reg Read
+				apDecodeControl[1] = 1;
+
+				// Scalar Alu Sel
+				apOutput[0] = 1;
+				apOutput[3] = 1;
+
+				// Scalar Reg Write
+				// Stays in zero
+
+				// Immediate
+				apOutput[5] = apInput[4];
+
+				// Vector Reg Write
+				// Stays in zero
+
+				// InSel
+				apOutput[7] = 1;
+
+				// Mem Read
+				// Stays in zero
+
+				// Mem Write
+				apOutput[9] = 1;
+
+				// Vector Alu Sel
+				apOutput[11] = 1;
+				apOutput[13] = 1;
+
+			} else if (tempOpCode == 2) { // Load
+				// Scalar Reg Read
+				apDecodeControl[0] = 1;
+
+				// Vector Reg Read
+				// Stays in zero
+
+				// Scalar Alu Sel
+				apOutput[0] = 1;
+				apOutput[3] = 1;
+
+				// Scalar Reg Write
+				// Stays in zero
+
+				// Immediate
+				apOutput[5] = apInput[4];
+
+				// Vector Reg Write
+				apOutput[6] = 1;
+
+				// InSel
+				apOutput[7] = 1;
+
+				// Mem Read
+				apOutput[8] = 1;
+
+				// Mem Write
+				// Stays in zero
+
+				// Vector Alu Sel
+				// Stays in zero
+				
+			}
 		}
 
 	} else {
-		memset(apOutput, 0, 10);
+		memset(apOutput, 0, 16);
 		memset(apDecodeControl, 0, 2);
-		*apDecodeControl = 0;
 		printf("Error: Unknown mode\n");
 
 	}

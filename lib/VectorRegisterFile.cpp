@@ -171,6 +171,9 @@ void VectorRegisterFile::RunMutex(void){
 				aWriteStatus = false; // Restore the status
 
 			}
+			//printf(">> Data Writted > ");
+			//BaseHelper::PrintBin(apDataIn, aWidth);
+			//printf(">> Index %d\n", indexC);
 			SaveMemory("/home/estape/vector.txt");
 
 		} // index out of bounds
@@ -193,7 +196,7 @@ void VectorRegisterFile::RunMutex(void){
 				aReadStatus = false; // Restore the status
 
 			}
-			
+
 		} // indexes out of bounds
 		
 	} // Do not read

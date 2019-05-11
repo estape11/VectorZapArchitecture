@@ -203,10 +203,9 @@ void ScalarAlu::RunMutex(void){
 		case 0xA: // OperB
 			if (*apSelectorOpB == 0){
 				resultTemp = dataOperB;
-
 			} else {
 				resultTemp = dataImmOperB;
-
+				
 			}
 			break;
 
@@ -222,7 +221,16 @@ void ScalarAlu::RunMutex(void){
 						apOperA, aWidth, dataImmOperB), aWidth);
 
 			}
-			
+			if (aWidth == 1 ){
+				printf(">> Lane In A ");
+				BaseHelper::PrintBin(apOperA, aWidth);
+				printf(">> Lane In B ");
+				BaseHelper::PrintBin(apOperB, aWidth);
+				printf(">> Immediate ");
+				BaseHelper::PrintBin(apSelectorOpB, 1);
+				printf(">>> Lane Out ");
+				BaseHelper::PrintBin(apResult, aWidth);
+			}
 			return;
 
 		case 0xC: // Circular Shift Right
@@ -245,7 +253,6 @@ void ScalarAlu::RunMutex(void){
 			break;
 
 	}
-
 	memcpy(apResult, BaseHelper::DecimalToBin(resultTemp, aWidth), sizeof(bit)*aWidth);
 
 }
