@@ -88,7 +88,7 @@ void Register::RunMutex(void){
 	}
 
 	if (aClock && *apEnable == 1) {
-		for (int i = 0; i < aPorts; i++){
+		for (int i = 0; i < aPortsUsed; i++){
 			memcpy(apData[i], apTemp[i], aWidth);
 
 		}

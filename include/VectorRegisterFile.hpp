@@ -38,6 +38,7 @@ public:
 		aWriteStatus = false;
 		aReadStatus = false;
 		aClock = false;
+		apDump = NULL;
 
 	}
 
@@ -79,9 +80,9 @@ public:
 
 	// Sets the control signals of RW
 	// @author estape11
-	// @params enableR, enableW
+	// @params enableR, enableW, dump
 	// @return void
-	void SetControlSignals(bit *, bit *);
+	void SetControlSignals(bit *, bit *, bit *);
 
 	// Sets the clock signal
 	// @author estape11
@@ -154,5 +155,6 @@ private:
 	bool aWriteStatus;
 	bool aReadStatus;
 	bool aClock;
+	bit *apDump;
 
 };

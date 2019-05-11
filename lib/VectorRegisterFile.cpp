@@ -45,9 +45,10 @@ void VectorRegisterFile::RegC(bit *pRegC){
 
 }
 
-void VectorRegisterFile::SetControlSignals(bit *pEnableR, bit *pEnableW){
+void VectorRegisterFile::SetControlSignals(bit *pEnableR, bit *pEnableW, bit *pDump){
 	apEnableR = pEnableR;
 	apEnableW = pEnableW;
+	apDump = pDump;
 
 }
 
@@ -172,9 +173,8 @@ void VectorRegisterFile::RunMutex(void){
 
 			}
 			//printf(">> Data Writted > ");
-			//BaseHelper::PrintBin(apDataIn, aWidth);
+			//BaseHelper::PrintBin(apDataIn, aWidth/2);
 			//printf(">> Index %d\n", indexC);
-			SaveMemory("/home/estape/vector.txt");
 
 		} // index out of bounds
 
@@ -198,8 +198,16 @@ void VectorRegisterFile::RunMutex(void){
 			}
 
 		} // indexes out of bounds
+		//printf("Reading > \n");
+		//BaseHelper::PrintBin(apOutA, aWidth/2);
+		//BaseHelper::PrintBin(apOutB, aWidth/2);
 		
 	} // Do not read
+
+	if (*apDump == 1) {
+		SaveMemory("/home/estape/vector.txt");
+		
+	}
 
 	aClock = (aClock)? false : true;
 }

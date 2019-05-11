@@ -55,7 +55,11 @@ void Pc::Run(void){
 void Pc::RunMutex(void) {
 	if (aClock && *apEnable == 1) {
 		// Copy the input value to data
-		memcpy(apData, BaseHelper::DecimalToBin(aCounter, aWidth), sizeof(bit)*aWidth);
+		memcpy(apData, BaseHelper::DecimalToBin(aCounter, aWidth), aWidth);
+
+	} 
+
+	if (!aClock && *apEnable == 1) {
 		aCounter++;
 
 	}

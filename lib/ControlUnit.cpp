@@ -57,12 +57,12 @@ bit *ControlUnit::MemoryWriteBackEn(void){
 
 void ControlUnit::Initialize(void){
 	// Modify every time is a signal added
-	apOutput = (bit *) malloc(sizeof(bit)*16);
-
-	apFetchControl = (bit *) malloc(sizeof(bit)*1);
-	*apFetchControl = 1;
+	apOutput = (bit *) malloc(sizeof(bit)*32);
+	memset(apOutput, 0, 32);
 	apDecodeControl = (bit *) malloc(sizeof(bit)*2); // For vector/scalar
 	memset(apDecodeControl, 0, 2);
+	apFetchControl = (bit *) malloc(sizeof(bit)*1);
+	*apFetchControl = 1;
 	apFetchDecodeEn = (bit *) malloc(sizeof(bit));
 	apDecodeExecuteEn = (bit *) malloc(sizeof(bit));
 	apExecuteMemoryEn = (bit *) malloc(sizeof(bit));
@@ -90,7 +90,7 @@ void ControlUnit::Run(void){
 				*apMemoryWriteBackEn = 0;
 
 			} else { // NOP
-				memset(apOutput, 0, 16);
+				memset(apOutput, 0, 32);
 				*apDecodeControl = 0;
 				
 			}
@@ -104,15 +104,15 @@ void ControlUnit::Run(void){
 			}
 
 		} else if (apInput[1] == 1 && apInput[0] == 0) { // Vector - Vector
-			memset(apOutput, 0, 16);
+			memset(apOutput, 0, 32);
 			*apDecodeControl = 0;
 
 		} else if (apInput[1] == 1 && apInput[0] == 1) { // Vector - Scalar
-			memset(apOutput, 0, 16);
+			memset(apOutput, 0, 32);
 			*apDecodeControl = 0;
 
 		} else {
-			memset(apOutput, 0, 16);
+			memset(apOutput, 0, 32);
 			*apDecodeControl = 0;
 			printf("Error: Unknown mode\n");
 
@@ -126,6 +126,8 @@ void ControlUnit::RunMutex(void){
 	// Mode
 	if (apInput[1] == 0 && apInput[0] == 0) { // NOP
 		if (apInput[3] == 1 && apInput[2] == 1) { // Halt
+			memset(apOutput, 0, 32);
+			memset(apDecodeControl, 0, 2);
 			// Stops the pipeline				
 			*apFetchControl = 0;
 			*apFetchDecodeEn = 0;
@@ -134,13 +136,22 @@ void ControlUnit::RunMutex(void){
 			*apMemoryWriteBackEn = 0;
 
 		} else { // NOP
-			memset(apOutput, 0, 16);
-			memset(apDecodeControl, 0, 2);
+			if (BaseHelper::BinToDecimal(apInput+5, 4) == 15){
+				memset(apOutput, 0, 32);
+				memset(apDecodeControl, 0, 2);
+				printf("> Memory Dump \n");
+				// Memory Dump
+				apOutput[14] = 1;
+				
+			} else {
+				memset(apOutput, 0, 32);
+				memset(apDecodeControl, 0, 2);
 
+			}
 		}
 
 	} else if (apInput[1] == 0 && apInput[0] == 1) { // Scalar - Scalar
-		memset(apOutput, 0, 16);
+		memset(apOutput, 0, 32);
 		memset(apDecodeControl, 0, 2);
 		if (apInput[3] == 0 && apInput[2] == 0) { // Type A
 			// Scalar Reg Read
@@ -346,13 +357,13 @@ void ControlUnit::RunMutex(void){
 
 				// Vector Alu Sel
 				// Stays in zero
-				
+
 			}
 
 		}
 
 	} else if (apInput[1] == 1 && apInput[0] == 0) { // Vector - Vector
-		memset(apOutput, 0, 16);
+		memset(apOutput, 0, 32);
 		memset(apDecodeControl, 0, 2);
 		if (apInput[3] == 0 && apInput[2] == 0) { // Type A
 			// Scalar Reg Read
@@ -433,7 +444,7 @@ void ControlUnit::RunMutex(void){
 		}
 
 	} else if (apInput[1] == 1 && apInput[0] == 1) { // Vector - Scalar
-		memset(apOutput, 0, 16);
+		memset(apOutput, 0, 32);
 		memset(apDecodeControl, 0, 2);
 		if (apInput[3] == 0 && apInput[2] == 0) { // Type A
 			// Scalar Reg Read
@@ -551,7 +562,7 @@ void ControlUnit::RunMutex(void){
 				apDecodeControl[1] = 1;
 
 				// Scalar Alu Sel
-				apOutput[0] = 1;
+				apOutput[1] = 1;
 				apOutput[3] = 1;
 
 				// Scalar Reg Write
@@ -584,7 +595,7 @@ void ControlUnit::RunMutex(void){
 				// Stays in zero
 
 				// Scalar Alu Sel
-				apOutput[0] = 1;
+				apOutput[1] = 1;
 				apOutput[3] = 1;
 
 				// Scalar Reg Write
@@ -612,7 +623,7 @@ void ControlUnit::RunMutex(void){
 		}
 
 	} else {
-		memset(apOutput, 0, 16);
+		memset(apOutput, 0, 32);
 		memset(apDecodeControl, 0, 2);
 		printf("Error: Unknown mode\n");
 

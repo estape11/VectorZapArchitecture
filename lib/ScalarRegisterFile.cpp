@@ -45,9 +45,10 @@ void ScalarRegisterFile::RegC(bit *pRegC){
 
 }
 
-void ScalarRegisterFile::SetControlSignals(bit *pEnableR, bit *pEnableW){
+void ScalarRegisterFile::SetControlSignals(bit *pEnableR, bit *pEnableW, bit *pDump){
 	apEnableR = pEnableR;
 	apEnableW = pEnableW;
+	apDump = pDump;
 
 }
 
@@ -143,7 +144,6 @@ void ScalarRegisterFile::RunMutex(void){
 		if (indexC != 0 && indexC < aLength){
 			// Saves the new data
 			memcpy(apData[indexC], apDataIn, aWidth);
-			SaveMemory("/home/estape/scalar.txt");
 
 		} // index out of bounds
 
@@ -160,6 +160,11 @@ void ScalarRegisterFile::RunMutex(void){
 		} // indexes out of bounds
 		
 	} // Do not read
+
+	if (*apDump == 1) {
+		SaveMemory("/home/estape/scalar.txt");
+		
+	}
 
 	aClock = (aClock)? false : true;
 

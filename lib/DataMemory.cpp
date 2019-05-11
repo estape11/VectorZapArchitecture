@@ -30,10 +30,11 @@ void DataMemory::Address(bit *pAddress) {
 
 }
 
-void DataMemory::SetControlSignals(bit *pEnableW, bit *pEnableR, bit *pInSel) {
+void DataMemory::SetControlSignals(bit *pEnableW, bit *pEnableR, bit *pInSel, bit * pDump) {
 	apEnableW = pEnableW;
 	apEnableR = pEnableR;
 	apInSel = pInSel;
+	apDump = pDump;
 
 }
 
@@ -129,8 +130,7 @@ void DataMemory::Run(void) {
 				}
 
 			}
-			SaveMemory("/home/estape/ram.txt");
-
+			//printf(">> Written on %d\n", address );
 		} // index out of bounds
 	} // Do not write
 
@@ -150,6 +150,7 @@ void DataMemory::Run(void) {
 					aVectReaded = false;
 
 				}
+				//printf(">> Readed from %d\n", address );
 			}
 
 		} // indexes out of bounds
@@ -165,6 +166,11 @@ void DataMemory::Run(void) {
 			
 		}
 
+	}
+
+	if (*apDump == 1) {
+		SaveMemory("/home/estape/ram.txt");
+		
 	}
 
 	aClock = (aClock)? false : true;

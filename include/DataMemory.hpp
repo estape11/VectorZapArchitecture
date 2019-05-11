@@ -36,6 +36,7 @@ public:
 		aClock = false;
 		aVectReaded = false;
 		aVectWritten = false;
+		apDump = NULL;
 
 	}
 
@@ -59,9 +60,9 @@ public:
 
 	// Sets the scalar input
 	// @author estape11
-	// @params enableW, enableR, inSel
+	// @params enableW, enableR, inSel, dump
 	// @return void
-	void SetControlSignals(bit *, bit *, bit *);
+	void SetControlSignals(bit *, bit *, bit *, bit *);
 
 	// Gets the output result
 	// @author estape11
@@ -123,5 +124,7 @@ private:
 
 	bool aVectReaded;
 	bool aVectWritten;
+
+	bit *apDump;
 
 };
