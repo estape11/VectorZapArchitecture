@@ -138,10 +138,26 @@ void ScalarAlu::RunMutex(void){
 		case 0x1: // Subs
 			if (*apSelectorOpB == 0){
 				resultTemp = dataOperA - dataOperB;
+				if (resultTemp < 0 ){
+					resultTemp*=-1;
+				}
 
 			} else {
 				resultTemp = dataOperA - dataImmOperB;
+				if (resultTemp < 0 ){
+					resultTemp*=-1;
+				}
 
+			}
+			if (aWidth == 1 ){
+				printf(">> Lane In A ");
+				BaseHelper::PrintBin(apOperA, aWidth);
+				printf(">> Lane In B ");
+				BaseHelper::PrintBin(apOperB, aWidth);
+				printf(">> Immediate ");
+				BaseHelper::PrintBin(apSelectorOpB, 1);
+				printf(">>> Lane Out ");
+				printf("%d\n", resultTemp);
 			}
 
 			break;

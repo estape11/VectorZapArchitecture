@@ -191,7 +191,11 @@ void ControlUnit::RunMutex(void){
 			// Stays in zero
 
 			// Vector Alu Sel
-			// Stays in zero			
+			// Stays in zero
+
+			// Mode
+			apOutput[15] = apInput[0];
+			apOutput[16] = apInput[1];
 
 		} else if (apInput[3] == 0 && apInput[2] == 1) { // Type L
 			// Scalar Reg Read
@@ -260,6 +264,10 @@ void ControlUnit::RunMutex(void){
 			// Vector Alu Sel
 			// Stays in zero
 
+			// Mode
+			apOutput[15] = apInput[0];
+			apOutput[16] = apInput[1];
+
 		} else if (apInput[3] == 1 && apInput[2] == 0){ // Type D
 			int tempOpCode = BaseHelper::BinToDecimal(apInput+5, 4);
 			if (tempOpCode == 0) { // Assignation
@@ -294,6 +302,10 @@ void ControlUnit::RunMutex(void){
 				// Vector Alu Sel
 				// Stays in zero
 
+				// Mode
+				apOutput[15] = apInput[0];
+				apOutput[16] = apInput[1];
+
 			} else if (tempOpCode == 1) { // Store
 				// Scalar Reg Read
 				apDecodeControl[0] = 1;
@@ -326,6 +338,10 @@ void ControlUnit::RunMutex(void){
 				// Vector Alu Sel
 				// Stays in zero
 
+				// Mode
+				apOutput[15] = apInput[0];
+				apOutput[16] = apInput[1];
+
 			} else if (tempOpCode == 2) { // Load
 				// Scalar Reg Read
 				apDecodeControl[0] = 1;
@@ -357,6 +373,10 @@ void ControlUnit::RunMutex(void){
 
 				// Vector Alu Sel
 				// Stays in zero
+
+				// Mode
+				apOutput[15] = apInput[0];
+				apOutput[16] = apInput[1];
 
 			}
 
@@ -405,6 +425,10 @@ void ControlUnit::RunMutex(void){
 					break;
 			}
 
+			// Mode
+			apOutput[15] = apInput[0];
+			apOutput[16] = apInput[1];
+
 		} else if (apInput[3] == 1 && apInput[2] == 0){ // Type D
 			int tempOpCode = BaseHelper::BinToDecimal(apInput+5, 4);
 			if (tempOpCode == 0) { // Assignation
@@ -438,6 +462,10 @@ void ControlUnit::RunMutex(void){
 				// Vector Alu Sel
 				apOutput[11] = 1;
 				apOutput[13] = 1;
+
+				// Mode
+				apOutput[15] = apInput[0];
+				apOutput[16] = apInput[1];
 
 			}
 
@@ -485,6 +513,10 @@ void ControlUnit::RunMutex(void){
 					apOutput[10] = 1;
 					break;
 			}
+
+			// Mode
+			apOutput[15] = apInput[0];
+			apOutput[16] = apInput[1];
 
 		} else if (apInput[3] == 0 && apInput[2] == 1) { // Type L
 			// Scalar Reg Read
@@ -552,6 +584,10 @@ void ControlUnit::RunMutex(void){
 					break;
 			}
 
+			// Mode
+			apOutput[15] = apInput[0];
+			apOutput[16] = apInput[1];
+
 		} else if (apInput[3] == 1 && apInput[2] == 0){ // Type D
 			int tempOpCode = BaseHelper::BinToDecimal(apInput+5, 4);
 			if (tempOpCode == 1) { // Store
@@ -584,9 +620,13 @@ void ControlUnit::RunMutex(void){
 				apOutput[9] = 1;
 
 				// Vector Alu Sel
-				apOutput[11] = 1;
+				apOutput[10] = 1;
 				apOutput[13] = 1;
 
+				// Mode
+				apOutput[15] = apInput[0];
+				apOutput[16] = apInput[1];
+				
 			} else if (tempOpCode == 2) { // Load
 				// Scalar Reg Read
 				apDecodeControl[0] = 1;
@@ -618,6 +658,10 @@ void ControlUnit::RunMutex(void){
 
 				// Vector Alu Sel
 				// Stays in zero
+
+				// Mode
+				apOutput[15] = apInput[0];
+				apOutput[16] = apInput[1];
 				
 			}
 		}

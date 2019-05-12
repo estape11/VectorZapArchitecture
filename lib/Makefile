@@ -24,13 +24,14 @@ VREGFILE=VectorRegisterFile
 PC=Pc
 CONUNI=ControlUnit
 DMEM=DataMemory
+HUNI=HazardUnit
 
 CC=g++
 INCLUDE=../include
 AR=ar
 OPTNS=-Wall -std=c++11
 
-all:$(CLK).o $(REG).o $(BASE).o $(SREGFILE).o $(SALU).o $(INSTMEM).o $(VREGFILE).o $(PC).o $(CONUNI).o $(VALU).o $(DMEM).o
+all:$(CLK).o $(REG).o $(BASE).o $(SREGFILE).o $(SALU).o $(INSTMEM).o $(VREGFILE).o $(PC).o $(CONUNI).o $(VALU).o $(DMEM).o $(HUNI).o
 
 $(CLK).o:$(CLK).cpp
 		$(CC) $(OPTNS) -c $(CLK).cpp -o $(CLK).o -I$(INCLUDE)
@@ -64,6 +65,9 @@ $(VALU).o:$(VALU).cpp
 
 $(DMEM).o:$(DMEM).cpp
 		$(CC) $(OPTNS) -c $(DMEM).cpp -o $(DMEM).o -I$(INCLUDE)
+
+$(HUNI).o:$(HUNI).cpp
+		$(CC) $(OPTNS) -c $(HUNI).cpp -o $(HUNI).o -I$(INCLUDE)
 
 clean:
 		rm -f *.o 

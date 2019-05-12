@@ -169,7 +169,7 @@ void DataMemory::Run(void) {
 	}
 
 	if (*apDump == 1) {
-		SaveMemory("/home/estape/ram.txt");
+		SaveMemory("ram.txt");
 		
 	}
 

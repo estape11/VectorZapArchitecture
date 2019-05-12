@@ -172,7 +172,7 @@ void VectorRegisterFile::RunMutex(void){
 				aWriteStatus = false; // Restore the status
 
 			}
-			//printf(">> Data Writted > ");
+			//printf(">> Data Written > ");
 			//BaseHelper::PrintBin(apDataIn, aWidth/2);
 			//printf(">> Index %d\n", indexC);
 
@@ -205,7 +205,7 @@ void VectorRegisterFile::RunMutex(void){
 	} // Do not read
 
 	if (*apDump == 1) {
-		SaveMemory("/home/estape/vector.txt");
+		SaveMemory("vector.txt");
 		
 	}
 

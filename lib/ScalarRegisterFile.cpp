@@ -162,7 +162,7 @@ void ScalarRegisterFile::RunMutex(void){
 	} // Do not read
 
 	if (*apDump == 1) {
-		SaveMemory("/home/estape/scalar.txt");
+		SaveMemory("scalar.txt");
 		
 	}
 
