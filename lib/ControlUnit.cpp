@@ -429,6 +429,76 @@ void ControlUnit::RunMutex(void){
 			apOutput[15] = apInput[0];
 			apOutput[16] = apInput[1];
 
+		} else 	if (apInput[3] == 0 && apInput[2] == 1) { // Type A
+			// Scalar Reg Read
+			// Stays in zero
+
+			// Vector Reg Read
+			apDecodeControl[1] = 1; 
+
+			// Scalar Alu Sel
+			// Stays in zero
+
+			// Scalar Reg Write
+			// Stays in zero
+
+			// Immediate
+			// Stays in zero
+
+			// Vector Reg Write
+			apOutput[6] = 1;
+
+			// InSel
+			apOutput[7] = 1;
+
+			// Mem Read
+			// Stays in zero
+
+			// Mem Write
+			// Stays in zero
+
+			// Vector Alu Sel
+			int tempOpCode = BaseHelper::BinToDecimal(apInput+5, 4);
+			switch (tempOpCode) {
+				case 0x0: // AND
+					apOutput[10] = 1;
+					apOutput[11] = 1;
+					break;
+
+				case 0x1: // OR
+					apOutput[11] = 1;
+					break;
+
+				case 0x2: // XOR
+					apOutput[12] = 1;
+					break;
+
+				case 0x3: // Shift R
+					apOutput[11] = 1;
+					apOutput[12] = 1;
+					break;
+
+				case 0x4: // Shift L
+					apOutput[10] = 1;
+					apOutput[12] = 1;
+					break;
+
+				case 0x5: // Circular Shift R
+					apOutput[12] = 1;
+					apOutput[13] = 1;
+					break;
+
+				case 0x6: // Circular Shift L
+					apOutput[10] = 1;
+					apOutput[11] = 1;
+					apOutput[13] = 1;
+					break;
+			}
+
+			// Mode
+			apOutput[15] = apInput[0];
+			apOutput[16] = apInput[1];
+
 		} else if (apInput[3] == 1 && apInput[2] == 0){ // Type D
 			int tempOpCode = BaseHelper::BinToDecimal(apInput+5, 4);
 			if (tempOpCode == 0) { // Assignation

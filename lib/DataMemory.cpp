@@ -75,7 +75,7 @@ void DataMemory::SaveMemory(char *pFile) {
 
 }
 
-void DataMemory::LoadMemory(char *pFile) {
+void DataMemory::LoadMemory(std::string pFile) {
 	std::string line;
 	std::ifstream memFile (pFile);
 	int index = 0;

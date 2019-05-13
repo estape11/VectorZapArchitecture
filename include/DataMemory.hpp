@@ -98,7 +98,7 @@ public:
 	// @author estape11
 	// @params file
 	// @return void
-	void LoadMemory(char *);
+	void LoadMemory(std::string);
 
 	// Run the memory
 	// @author estape11

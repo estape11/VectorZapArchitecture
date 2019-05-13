@@ -149,16 +149,6 @@ void ScalarAlu::RunMutex(void){
 				}
 
 			}
-			if (aWidth == 1 ){
-				printf(">> Lane In A ");
-				BaseHelper::PrintBin(apOperA, aWidth);
-				printf(">> Lane In B ");
-				BaseHelper::PrintBin(apOperB, aWidth);
-				printf(">> Immediate ");
-				BaseHelper::PrintBin(apSelectorOpB, 1);
-				printf(">>> Lane Out ");
-				printf("%d\n", resultTemp);
-			}
 
 			break;
 
@@ -189,6 +179,17 @@ void ScalarAlu::RunMutex(void){
 			} else {
 				resultTemp = dataOperA ^ dataImmOperB;
 
+			}
+
+			if (aWidth == 1 ){
+				printf(">> Lane In A ");
+				BaseHelper::PrintBin(apOperA, aWidth);
+				printf(">> Lane In B ");
+				BaseHelper::PrintBin(apOperB, aWidth);
+				printf(">> Immediate ");
+				BaseHelper::PrintBin(apSelectorOpB, 1);
+				printf(">>> Lane Out ");
+				printf("%d\n", resultTemp);
 			}
 			break;
 
@@ -288,6 +289,9 @@ void ScalarAlu::RunMutex(void){
 			resultTemp = 0;
 			break;
 
+	}
+	if (resultTemp < 0 ){
+		resultTemp*=-1;
 	}
 	memcpy(apResult, BaseHelper::DecimalToBin(resultTemp, aWidth), sizeof(bit)*aWidth);
 

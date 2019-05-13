@@ -69,7 +69,7 @@ void InstructionMemory::RunMutex(void){
 	} // indexes out of bounds
 }
 
-void InstructionMemory::LoadMemory(char *pFile){
+void InstructionMemory::LoadMemory(std::string pFile){
 	std::string line;
 	std::ifstream memFile (pFile);
 	int index = 0;

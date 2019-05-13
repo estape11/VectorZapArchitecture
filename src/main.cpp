@@ -209,10 +209,27 @@ void StartHazardUnit(void){
 
 }
 
-int main(){
+int main(int argc, const char* argv[]){
+	printf(">> \u26A1 Simulation started \u26A1\n");
+	std::string instFile("Mem.ROM");
+	std::string dataFile("Mem.RAM");
+
+	if ( argc > 1 ) {
+		instFile = argv[1];
+		if (argc > 2) {
+			dataFile = argv[2];
+
+		} else {
+			printf(">> Warning: Default RAM Memory file\n");
+		}
+
+	} else {
+		printf(">> Warning: Default ROM Memory/RAM Memory file\n");
+	}
+
 	// Clock
 	gClk = Clock();
-	gClk.Frequency(50); //max 100 w/o prints
+	gClk.Frequency(40); //max 40 w/o prints
 	gClk.Initialize();
 
 	// Control Unit
@@ -230,9 +247,9 @@ int main(){
 	// Instruction Memory
 	gInstMem = InstructionMemory();
 	gInstMem.Width(32);
-	gInstMem.Length(600);
+	gInstMem.Length(10240); // 40k
 	gInstMem.Initialize();
-	gInstMem.LoadMemory("/home/estape/Desktop/Mem.ROM");
+	gInstMem.LoadMemory(instFile);
 	gInstMem.Input(gPc.Data());
 
 	// Register Fetch-Decode
@@ -357,7 +374,7 @@ int main(){
 	gDataMemory.InScalar(gExecuteMemory.Output(4));
 	gDataMemory.InVector(gExecuteMemory.Output(3));
 	gDataMemory.Address(gExecuteMemory.Output(2));
-	gDataMemory.LoadMemory("/home/estape/Desktop/Mem.RAM");
+	gDataMemory.LoadMemory(dataFile);
 
 	// Hazard Forward
 	gHazardUnit.DataMem(gDataMemory.Output());

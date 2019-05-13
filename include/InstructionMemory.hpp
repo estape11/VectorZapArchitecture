@@ -38,7 +38,7 @@ public:
 	void Initialize(void);
 	void Run(void);
 	void RunMutex(void);
-	void LoadMemory(char *);
+	void LoadMemory(std::string);
 
 private:
 	int aWidth;
